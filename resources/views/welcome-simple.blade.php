@@ -45,6 +45,10 @@
                         </div>
                     @endforeach
                 </div>
+
+                <div class="d-flex justify-content-center mt-5">
+                    {{ $products->appends(['search' => $search ?? ''])->links('vendor.pagination.bootstrap-5') }}
+                </div>
                 @if($products->isEmpty())
                     <div class="alert alert-info text-center py-4">
                         <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
@@ -59,17 +63,21 @@
 
 @push('styles')
 <style>
-    .gap-3 {
-        gap: 1rem;
-    }
-    .d-flex {
-        display: flex;
-    }
-    .card {
+    .pagination-modern .page-link {
+        border: none;
+        color: #6c757d;
+        margin: 0 2px;
+        border-radius: 5px !important;
         transition: all 0.3s ease;
     }
-    .card:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    .pagination-modern .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        color: white;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+    }
+    .pagination-modern .page-link:hover:not(.active) {
+        background-color: #f8f9fa;
+        color: var(--bs-primary);
     }
 </style>
 @endpush

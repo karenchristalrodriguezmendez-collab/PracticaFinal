@@ -23,7 +23,7 @@ Route::get("/", function (Request $request) {
               ->orWhere("description", "like", "%{$search}%");
     }
 
-    $products = $query->get();
+    $products = $query->paginate(6);
     return view("welcome-simple", compact("products", "search"));
 });
 
