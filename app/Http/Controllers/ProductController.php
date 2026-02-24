@@ -61,17 +61,30 @@ class ProductController extends Controller
                 );
             }
 
+            $id = $request->input("id", null);
+
             // validar los inputs del request (sin validación de imagen por ahora)
             $validated = $request->validate([
-                "name" => "required|string|max:40",
+                "name" => [
+                    "required",
+                    "string",
+                    "max:40",
+                    $id ? "unique:products,name,$id" : "unique:products,name"
+                ],
                 "price" => "required|numeric|min:1|max:9999999",
                 "description" => "required|string",
+            ], [
+                'name.required' => 'El nombre del producto es obligatorio.',
+                'name.unique' => 'Ya existe un producto con este nombre.',
+                'name.max' => 'El nombre no debe exceder los 40 caracteres.',
+                'price.required' => 'El precio es obligatorio.',
+                'price.numeric' => 'El precio debe ser un número.',
+                'price.min' => 'El precio debe ser de al menos 1.',
+                'description.required' => 'La descripción es obligatoria.',
             ]);
 
             // No agregar imagen al validated array ya que no está validada
             // La procesaremos por separado
-
-            $id = $request->input("id", null);
 
             if ($id) {
                 // actualizar producto existente
