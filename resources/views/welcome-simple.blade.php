@@ -38,7 +38,20 @@
                                     <p class="card-text text-muted small">{{ Str::limit($product->description, 80) }}</p>
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <span class="h5 mb-0 text-success">${{ number_format($product->price, 2) }}</span>
-                                        <a href="#" class="btn btn-outline-primary btn-sm">Ver más</a>
+                                        @auth
+                                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form shadow-none">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                                                    <i class="bi bi-plus-lg me-1"></i> Comprar
+                                                </button>
+                                            </form>
+                                        @else
+                                            <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                                <i class="bi bi-plus-lg me-1"></i> Comprar
+                                            </a>
+                                        @endauth
                                     </div>
                                 </div>
                             </div>
@@ -83,8 +96,46 @@
 @endpush
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-@auth
+$(document).ready(function() {
+    $('.add-to-cart-form').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const url = form.attr('action');
+        const data = form.serialize();
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Update badge
+                    let badge = $('#cart-badge');
+                    if (badge.length === 0) {
+                        $('.bi-cart3').parent().append('<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-badge">' + response.cart_count + '</span>');
+                    } else {
+                        badge.text(response.cart_count);
+                    }
+                    
+                    // Visual feedback
+                    const btn = form.find('button');
+                    const originalHtml = btn.html();
+                    btn.html('<i class="bi bi-check-lg"></i> Listo').removeClass('btn-primary').addClass('btn-success');
+                    setTimeout(() => {
+                        btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');
+                    }, 2000);
+                }
+            },
+            error: function() {
+                alert('Ocurrió un error al añadir el producto.');
+            }
+        });
+    });
+
+    @auth
     // redireccinar a home en 5 segs
     setTimeout(function() {
         window.location.href = "{{ route('home') }}";

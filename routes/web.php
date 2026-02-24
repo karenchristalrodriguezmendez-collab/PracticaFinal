@@ -64,6 +64,12 @@ Route::post("password/confirm", [ConfirmPasswordController::class, "confirm"]);
 Route::middleware(["auth", "security:auth"])->group(function () {
     Route::get("/home", [HomeController::class, "index"])->name("home");
 
+    // Rutas del carrito
+    Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/update/{id}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
     // Rutas de productos
     Route::resource("products", ProductController::class)->except([
         "show",

@@ -37,7 +37,23 @@
                     </ul>
 
                     <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <!-- Shopping Cart Icon -->
+                        <li class="nav-item me-3">
+                            <a href="{{ route('cart.index') }}" class="nav-link position-relative pt-2">
+                                <i class="bi bi-cart3 fs-4"></i>
+                                @auth
+                                    @php
+                                        $cartCount = \App\Models\CartItem::where('user_id', auth()->id())->sum('quantity');
+                                    @endphp
+                                    @if($cartCount > 0)
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-badge">
+                                            {{ $cartCount }}
+                                        </span>
+                                    @endif
+                                @endauth
+                            </a>
+                        </li>
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
