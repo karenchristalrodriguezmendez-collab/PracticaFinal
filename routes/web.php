@@ -15,7 +15,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\UserController;
 
 Route::get("/", function () {
-    return view("welcome-simple");
+    $products = \App\Models\Product::all();
+    return view("welcome-simple", compact('products'));
 });
 
 // Custom auth routes with better control

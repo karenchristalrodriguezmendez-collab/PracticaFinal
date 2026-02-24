@@ -21,7 +21,38 @@
                 </div>
             </div>
 
-            
+            <div class="mt-5">
+                <h3 class="mb-4">Nuestros Productos</h3>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach($products as $product)
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0">
+                                @if($product->hasImage())
+                                    <img src="{{ $product->image_url }}" class="card-img-top" alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
+                                @else
+                                    <div class="bg-light d-flex align-items-center justify-content-center card-img-top" style="height: 200px;">
+                                        <i class="bi bi-image text-muted fs-1"></i>
+                                    </div>
+                                @endif
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">{{ $product->name }}</h5>
+                                    <p class="card-text text-muted small">{{ Str::limit($product->description, 80) }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <span class="h5 mb-0 text-success">${{ number_format($product->price, 2) }}</span>
+                                        <a href="#" class="btn btn-outline-primary btn-sm">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                @if($products->isEmpty())
+                    <div class="alert alert-info text-center py-4">
+                        <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+                        No hay productos disponibles en este momento.
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>
