@@ -14,9 +14,17 @@ use App\Http\Controllers\CompanyController;
 
 use App\Http\Controllers\UserController;
 
-Route::get("/", function () {
-    $products = \App\Models\Product::all();
-    return view("welcome-simple", compact('products'));
+Route::get("/", function (Request $request) {
+    $search = $request->input("search");
+    $query = \App\Models\Product::query();
+
+    if ($search) {
+        $query->where("name", "like", "%{$search}%")
+              ->orWhere("description", "like", "%{$search}%");
+    }
+
+    $products = $query->get();
+    return view("welcome-simple", compact("products", "search"));
 });
 
 // Custom auth routes with better control

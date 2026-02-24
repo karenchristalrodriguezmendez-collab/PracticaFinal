@@ -2,22 +2,21 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('messages.Welcome') }}</div>
-
-                <div class="card-body">
-                    @guest
-                        <h4>Bienvenido invitado!!!</h4>
-                        {{-- <p class="mb-4">Por favor, inicia sesión para acceder al menú principal.</p> --}}
-                        <p class="mt-4">Aquí puedes acceder a la información de contenido público</p>
-                    @else
-                        <h4>¡Hola, {{ Auth::user()->name }} !</h4>
-                        <p class="mb-4">Has iniciado sesión correctamente.</p>
-                        <p class="mb-4">En breve serás redireccionado...</p>
-                        <a href="{{ route('home') }}" class="btn btn-primary">{{ __('Ir al Menú Principal') }}</a>
-                    @endguest
+            <div class="card mb-4 border-0 shadow-sm bg-primary bg-gradient text-white">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">¿Qué estás buscando hoy?</h2>
+                    <form action="{{ url('/') }}" method="GET" class="d-flex gap-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                            <input type="text" name="search" class="form-control border-0" 
+                                placeholder="Busca por nombre o descripción..." 
+                                value="{{ $search ?? '' }}">
+                            <button class="btn btn-light" type="submit">Buscar</button>
+                        </div>
+                        @if(isset($search) && $search != '')
+                            <a href="{{ url('/') }}" class="btn btn-outline-light"><i class="bi bi-x-lg"></i></a>
+                        @endif
+                    </form>
                 </div>
             </div>
 
