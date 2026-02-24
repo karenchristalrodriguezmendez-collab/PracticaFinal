@@ -40,8 +40,16 @@ class UserController extends Controller
             $id = $request->input("id", null);
 
             $rules = [
-                "name" => "required|string|max:255",
+                "name" => ["required", "string", "max:255", Rule::unique('users')->ignore($id)],
                 "email" => ["required", "string", "email", "max:255", Rule::unique('users')->ignore($id)],
+            ];
+
+            $messages = [
+                'name.unique' => 'El nombre de usuario ya está en uso.',
+                'email.unique' => 'El correo electrónico ya está registrado.',
+                'email.email' => 'Debe ser un email válido.',
+                'name.required' => 'El campo nombre es obligatorio.',
+                'email.required' => 'El campo email es obligatorio.',
             ];
 
             if (!$id) {
@@ -50,7 +58,7 @@ class UserController extends Controller
                 $rules["password"] = "nullable|string|min:8|confirmed";
             }
 
-            $validated = $request->validate($rules);
+            $validated = $request->validate($rules, $messages);
 
             if ($id) {
                 // Actualizar usuario existente

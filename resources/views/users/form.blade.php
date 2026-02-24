@@ -60,7 +60,10 @@
             />
 
             <div class="col-12">
-                <button class="btn btn-primary" type="submit">Guardar Usuario</button>
+                <button class="btn btn-primary" type="submit" id="btn-save">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="save-spinner"></span>
+                    <span id="save-text">Guardar Usuario</span>
+                </button>
                 <a href="{{ route('users.index') }}" class="btn btn-secondary ms-2">Cancelar</a>
             </div>
         </form>
@@ -80,6 +83,15 @@
                         if (!form.checkValidity()) {
                             event.preventDefault();
                             event.stopPropagation();
+                        } else {
+                            // Prevent double click
+                            const btn = document.getElementById('btn-save');
+                            const spinner = document.getElementById('save-spinner');
+                            const text = document.getElementById('save-text');
+                            
+                            btn.disabled = true;
+                            spinner.classList.remove('d-none');
+                            text.innerText = 'Guardando...';
                         }
                         form.classList.add('was-validated')
                     }, false)
