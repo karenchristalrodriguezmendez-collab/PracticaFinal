@@ -22,8 +22,17 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view("home");
+        $search = $request->input("search");
+        $query = \App\Models\Product::query();
+
+        if ($search) {
+            $query->where("name", "like", "%{$search}%")
+                  ->orWhere("description", "like", "%{$search}%");
+        }
+
+        $products = $query->paginate(6);
+        return view("home", compact("products", "search"));
     }
 }
