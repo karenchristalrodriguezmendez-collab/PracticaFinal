@@ -129,19 +129,16 @@
 
                                 <div id="card-details" class="payment-details mb-3">
                                     <div class="mb-2">
-                                        <label class="small text-muted">Número de tarjeta</label>
-                                        <input type="text" class="form-control form-control-sm" placeholder="0000 0000 0000 0000">
-                                    </div>
-                                    <div class="row g-2">
-                                        <div class="col-7">
-                                            <label class="small text-muted">Vencimiento</label>
-                                            <input type="text" class="form-control form-control-sm" placeholder="MM/AA">
-                                        </div>
-                                        <div class="col-5">
-                                            <label class="small text-muted">CVV</label>
-                                            <input type="text" class="form-control form-control-sm" placeholder="123">
+                                        <label class="small text-muted">Número de tarjeta (Stripe)</label>
+                                        <div id="stripe-card-element" class="form-control py-2">
+                                            <!-- Stripe Element will be inserted here -->
                                         </div>
                                     </div>
+                                    <div id="stripe-errors" class="text-danger small mt-1" role="alert"></div>
+                                </div>
+
+                                <div id="paypal-details" class="payment-details mb-3" style="display: none;">
+                                    <div id="paypal-button-container"></div>
                                 </div>
 
                                 <div id="oxxo-details" class="payment-details mb-3" style="display: none;">
@@ -156,7 +153,7 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill mb-2">
+                                <button type="submit" id="confirm-payment-btn" class="btn btn-success w-100 py-2 rounded-pill mb-2">
                                     Confirmar y Pagar
                                 </button>
                             </form>
@@ -170,10 +167,13 @@
         </div>
 
         @push('scripts')
+        <script src="https://js.stripe.com/v3/"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId ?? 'sb' }}&currency=MXN"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const showPaymentBtn = document.getElementById('show-payment');
                 const paymentSection = document.getElementById('payment-section');
+                const confirmBtn = document.getElementById('confirm-payment-btn');
                 
                 showPaymentBtn.addEventListener('click', function() {
                     paymentSection.style.display = 'block';
@@ -181,13 +181,104 @@
                     paymentSection.scrollIntoView({ behavior: 'smooth' });
                 });
 
+                // Stripe Initialization
+                let stripe, elements, card;
+                const stripeKey = '{{ $stripeKey }}';
+                if (stripeKey && !stripeKey.includes('placeholder')) {
+                    stripe = Stripe(stripeKey);
+                    elements = stripe.elements();
+                    card = elements.create('card', {
+                        style: {
+                            base: {
+                                fontSize: '16px',
+                                color: '#32325d',
+                            },
+                        }
+                    });
+                    card.mount('#stripe-card-element');
+                } else {
+                    document.getElementById('stripe-card-element').innerHTML = '<p class="text-muted small mb-0">Configura tu STRIPE_KEY en .env</p>';
+                }
+
+                // Initial PayPal state: hidden because Card is default
+                const paypalContainer = document.getElementById('paypal-details');
+
                 // Toggle payment details
                 const radios = document.querySelectorAll('input[name="payment_method"]');
                 radios.forEach(radio => {
                     radio.addEventListener('change', function() {
                         document.querySelectorAll('.payment-details').forEach(el => el.style.display = 'none');
-                        document.getElementById(this.value + '-details').style.display = 'block';
+                        const detailsId = this.value + '-details';
+                        const detailsEl = document.getElementById(detailsId);
+                        if (detailsEl) detailsEl.style.display = 'block';
+
+                        // Show/Hide default confirm button
+                        if (this.value === 'paypal') {
+                            confirmBtn.style.display = 'none';
+                            initPayPal();
+                        } else {
+                            confirmBtn.style.display = 'block';
+                        }
                     });
+                });
+
+                function initPayPal() {
+                    if (window.paypal && !document.querySelector('#paypal-button-container iframe')) {
+                        paypal.Buttons({
+                            createOrder: function(data, actions) {
+                                return actions.order.create({
+                                    purchase_units: [{
+                                        amount: {
+                                            value: '{{ $total }}'
+                                        }
+                                    }]
+                                });
+                            },
+                            onApprove: function(data, actions) {
+                                return actions.order.capture().then(function(details) {
+                                    // Submit the form with bypass for PayPal
+                                    const form = document.getElementById('checkout-form');
+                                    const hiddenInput = document.createElement('input');
+                                    hiddenInput.type = 'hidden';
+                                    hiddenInput.name = 'paypal_order_id';
+                                    hiddenInput.value = data.orderID;
+                                    form.appendChild(hiddenInput);
+                                    form.submit();
+                                });
+                            }
+                        }).render('#paypal-button-container');
+                    }
+                }
+
+                // Card payment and form submission
+                const form = document.getElementById('checkout-form');
+                form.addEventListener('submit', async function(e) {
+                    const method = document.querySelector('input[name="payment_method"]:checked').value;
+                    
+                    if (method === 'card' && stripe) {
+                        e.preventDefault();
+                        confirmBtn.disabled = true;
+                        
+                        const {paymentMethod, error} = await stripe.createPaymentMethod({
+                            type: 'card',
+                            card: card,
+                        });
+
+                        if (error) {
+                            const errorElement = document.getElementById('stripe-errors');
+                            errorElement.textContent = error.message;
+                            confirmBtn.disabled = false;
+                        } else {
+                            const hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'stripe_payment_id';
+                            hiddenInput.value = paymentMethod.id;
+                            form.appendChild(hiddenInput);
+                            form.submit();
+                        }
+                    } else if (method === 'paypal') {
+                        e.preventDefault(); // Handled by PayPal JS
+                    }
                 });
 
                 // Style active option

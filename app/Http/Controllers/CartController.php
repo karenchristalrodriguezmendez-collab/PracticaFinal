@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CartItem;
 use Illuminate\Support\Str;
+use App\Models\Order;
+use App\Models\OrderItem;
 
 class CartController extends Controller
 {
@@ -15,7 +17,10 @@ class CartController extends Controller
             return $item->product->price * $item->quantity;
         });
 
-        return view('cart.index', compact('cartItems', 'total'));
+        $stripeKey = env('STRIPE_KEY');
+        $paypalClientId = env('PAYPAL_CLIENT_ID');
+
+        return view('cart.index', compact('cartItems', 'total', 'stripeKey', 'paypalClientId'));
     }
 
     public function add(Request $request)
@@ -94,9 +99,66 @@ class CartController extends Controller
         // Simular generación de folio único
         $orderNumber = 'ORD-' . strtoupper(Str::random(8));
 
+        // Crear el registro del Pedido Real
+        $order = Order::create([
+            'user_id' => $user->id,
+            'order_number' => $orderNumber,
+            'total' => $total,
+            'payment_method' => $paymentMethod,
+            'status' => ($paymentMethod == 'card' || $paymentMethod == 'paypal') ? 'completed' : 'pending',
+            'transaction_id' => $request->stripe_payment_id ?? $request->paypal_order_id ?? null,
+            'reference' => ($paymentMethod == 'oxxo' || $paymentMethod == 'transfer') ? rand(1000000000, 9999999999) : null
+        ]);
+
+        // Registrar los productos del pedido para el historial antes de borrar el carrito
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'price' => $item->product->price
+            ]);
+        }
+
+        // Datos para la vista success
+        $itemsData = $cartItems->map(function($item) {
+            return [
+                'name' => $item->product->name,
+                'price' => $item->product->price,
+                'quantity' => $item->quantity,
+                'total' => $item->total
+            ];
+        });
+
         // Vaciar el carrito
         CartItem::where('user_id', $user->id)->delete();
 
-        return view('cart.success', compact('total', 'paymentMethod', 'orderNumber', 'cartItems'));
+        // Almacenar en sesión para la ruta GET de éxito
+        session()->put('last_order', [
+            'total' => $total,
+            'paymentMethod' => $paymentMethod,
+            'orderNumber' => $orderNumber,
+            'items' => $itemsData,
+            'reference' => $order->reference
+        ]);
+
+        return redirect()->route('cart.success');
+    }
+
+    public function success()
+    {
+        $order = session()->get('last_order');
+
+        if (!$order) {
+            return redirect()->route('home');
+        }
+
+        return view('cart.success', [
+            'total' => $order['total'],
+            'paymentMethod' => $order['paymentMethod'],
+            'orderNumber' => $order['orderNumber'],
+            'items' => $order['items'],
+            'reference' => $order['reference'] ?? null
+        ]);
     }
 }

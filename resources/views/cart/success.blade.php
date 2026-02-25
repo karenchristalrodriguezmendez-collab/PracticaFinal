@@ -24,6 +24,18 @@
                             </div>
                         </div>
 
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Resumen de Productos</h6>
+                            <ul class="list-group list-group-flush small">
+                                @foreach($items as $item)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <span>{{ $item['name'] }} (x{{ $item['quantity'] }})</span>
+                                        <span class="fw-bold">${{ number_format($item['total'], 2) }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
                         @if($paymentMethod == 'oxxo')
                             <div class="payment-receipt bg-light rounded-4 p-4 text-center border">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Oxxo_Logo.svg/1200px-Oxxo_Logo.svg.png" 
@@ -40,7 +52,7 @@
                                             <div class="bg-dark mx-1" style="width: {{ $width }}px; height: 100%;"></div>
                                         @endforeach
                                     </div>
-                                    <code class="h5 fw-bold letter-spacing-2">9876 5432 1098 7654</code>
+                                    <code class="h5 fw-bold letter-spacing-2">{{ implode(' ', str_split($reference, 4)) }}</code>
                                 </div>
                                 
                                 <div class="alert alert-warning border-0 small mt-3">
@@ -66,17 +78,17 @@
                                         <span class="fw-bold">Yana's Page S.A de C.V</span>
                                     </div>
                                     <div class="col-12 mt-3 border-top pt-3">
-                                        <label class="small text-muted d-block">CLABE Interbancaria</label>
+                                        <label class="small text-muted d-block">Referencia Única</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control fw-bold border-0 bg-white" value="0121 8000 1234 5678 90" readonly>
+                                            <input type="text" class="form-control fw-bold border-0 bg-white" value="{{ $reference }}" readonly>
                                             <button class="btn btn-outline-primary border-0" type="button" onclick="copyClabe()">
                                                 <i class="bi bi-copy"></i>
                                             </button>
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <label class="small text-muted d-block">Referencia</label>
-                                        <span class="fw-bold text-primary">{{ $orderNumber }}</span>
+                                        <label class="small text-muted d-block">CLABE Interbancaria</label>
+                                        <span class="fw-bold text-primary">0121 8000 1234 5678 90</span>
                                     </div>
                                 </div>
                                 

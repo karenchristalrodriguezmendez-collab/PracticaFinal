@@ -70,6 +70,8 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     Route::patch('/cart/update/{id}', [App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout', [App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/cart/checkout', function() { return redirect()->route('cart.index'); });
+    Route::get('/cart/success', [App\Http\Controllers\CartController::class, 'success'])->name('cart.success');
 
     // Rutas de productos
     Route::resource("products", ProductController::class)->except([
