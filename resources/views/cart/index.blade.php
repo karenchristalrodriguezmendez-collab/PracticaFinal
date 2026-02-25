@@ -114,6 +114,12 @@
                                         </label>
                                     </div>
                                     <div class="form-check payment-option p-3 border rounded mb-2" style="cursor: pointer;">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay_paypal" value="paypal">
+                                        <label class="form-check-label w-100" for="pay_paypal">
+                                            <i class="bi bi-paypal me-2"></i> PayPal
+                                        </label>
+                                    </div>
+                                    <div class="form-check payment-option p-3 border rounded mb-2" style="cursor: pointer;">
                                         <input class="form-check-input" type="radio" name="payment_method" id="pay_oxxo" value="oxxo">
                                         <label class="form-check-label w-100" for="pay_oxxo">
                                             <i class="bi bi-shop me-2"></i> OXXO Pay
@@ -204,6 +210,15 @@
                 const paypalContainer = document.getElementById('paypal-details');
 
                 // Toggle payment details
+                const paymentOptions = document.querySelectorAll('.payment-option');
+                paymentOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const radio = this.querySelector('input[name="payment_method"]');
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change'));
+                    });
+                });
+
                 const radios = document.querySelectorAll('input[name="payment_method"]');
                 radios.forEach(radio => {
                     radio.addEventListener('change', function() {
