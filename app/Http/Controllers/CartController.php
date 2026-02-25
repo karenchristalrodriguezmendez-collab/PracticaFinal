@@ -70,4 +70,16 @@ class CartController extends Controller
 
         return redirect()->back()->with('success', 'Producto eliminado del carrito.');
     }
+
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'payment_method' => 'required|in:card,oxxo,transfer',
+        ]);
+
+        // Simulación de procesamiento de pago exitoso
+        CartItem::where('user_id', auth()->id())->delete();
+
+        return redirect()->route('home')->with('success', '¡Gracias por tu compra! El pago ha sido procesado con éxito mediante ' . ucfirst($request->payment_method) . '.');
+    }
 }

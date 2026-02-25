@@ -101,12 +101,108 @@
                             <span class="h5">Total</span>
                             <span class="h5 text-primary">${{ number_format($total, 2) }}</span>
                         </div>
-                        <button class="btn btn-primary w-100 py-2 rounded-pill mb-2">Proceder al pago</button>
+                        
+                        <div id="payment-section" style="display: none;">
+                            <h6 class="mb-3">Método de Pago</h6>
+                            <form action="{{ route('cart.checkout') }}" method="POST" id="checkout-form">
+                                @csrf
+                                <div class="mb-3">
+                                    <div class="form-check payment-option p-3 border rounded mb-2" style="cursor: pointer;">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay_card" value="card" checked>
+                                        <label class="form-check-label w-100" for="pay_card">
+                                            <i class="bi bi-credit-card me-2"></i> Tarjeta de Crédito/Débito
+                                        </label>
+                                    </div>
+                                    <div class="form-check payment-option p-3 border rounded mb-2" style="cursor: pointer;">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay_oxxo" value="oxxo">
+                                        <label class="form-check-label w-100" for="pay_oxxo">
+                                            <i class="bi bi-shop me-2"></i> OXXO Pay
+                                        </label>
+                                    </div>
+                                    <div class="form-check payment-option p-3 border rounded mb-2" style="cursor: pointer;">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pay_transfer" value="transfer">
+                                        <label class="form-check-label w-100" for="pay_transfer">
+                                            <i class="bi bi-bank me-2"></i> Transferencia (SPEI)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="card-details" class="payment-details mb-3">
+                                    <div class="mb-2">
+                                        <label class="small text-muted">Número de tarjeta</label>
+                                        <input type="text" class="form-control form-control-sm" placeholder="0000 0000 0000 0000">
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-7">
+                                            <label class="small text-muted">Vencimiento</label>
+                                            <input type="text" class="form-control form-control-sm" placeholder="MM/AA">
+                                        </div>
+                                        <div class="col-5">
+                                            <label class="small text-muted">CVV</label>
+                                            <input type="text" class="form-control form-control-sm" placeholder="123">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="oxxo-details" class="payment-details mb-3" style="display: none;">
+                                    <div class="alert alert-light border small">
+                                        Se generará una ficha de pago para concluir en cualquier tienda OXXO.
+                                    </div>
+                                </div>
+
+                                <div id="transfer-details" class="payment-details mb-3" style="display: none;">
+                                    <div class="alert alert-light border small">
+                                        Recibirás los datos CLABE para realizar tu transferencia electrónica.
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill mb-2">
+                                    Confirmar y Pagar
+                                </button>
+                            </form>
+                        </div>
+
+                        <button id="show-payment" class="btn btn-primary w-100 py-2 rounded-pill mb-2">Proceder al pago</button>
                         <a href="{{ url('/') }}" class="btn btn-outline-secondary w-100 py-2 rounded-pill">Seguir comprando</a>
                     </div>
                 </div>
             </div>
         </div>
+
+        @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const showPaymentBtn = document.getElementById('show-payment');
+                const paymentSection = document.getElementById('payment-section');
+                
+                showPaymentBtn.addEventListener('click', function() {
+                    paymentSection.style.display = 'block';
+                    showPaymentBtn.style.display = 'none';
+                    paymentSection.scrollIntoView({ behavior: 'smooth' });
+                });
+
+                // Toggle payment details
+                const radios = document.querySelectorAll('input[name="payment_method"]');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        document.querySelectorAll('.payment-details').forEach(el => el.style.display = 'none');
+                        document.getElementById(this.value + '-details').style.display = 'block';
+                    });
+                });
+
+                // Style active option
+                const options = document.querySelectorAll('.payment-option');
+                options.forEach(opt => {
+                    opt.addEventListener('click', function() {
+                        options.forEach(o => o.classList.remove('border-primary', 'bg-light'));
+                        this.classList.add('border-primary', 'bg-light');
+                        this.querySelector('input').checked = true;
+                        this.querySelector('input').dispatchEvent(new Event('change'));
+                    });
+                });
+            });
+        </script>
+        @endpush
     @endif
 </div>
 @endsection
