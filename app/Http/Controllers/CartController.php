@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CartItem;
+use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
@@ -77,9 +78,25 @@ class CartController extends Controller
             'payment_method' => 'required|in:card,oxxo,transfer',
         ]);
 
-        // Simulación de procesamiento de pago exitoso
-        CartItem::where('user_id', auth()->id())->delete();
+        $user = auth()->user();
+        $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
+        
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío.');
+        }
 
-        return redirect()->route('home')->with('success', '¡Gracias por tu compra! El pago ha sido procesado con éxito mediante ' . ucfirst($request->payment_method) . '.');
+        $total = $cartItems->sum(function ($item) {
+            return $item->product->price * $item->quantity;
+        });
+
+        $paymentMethod = $request->payment_method;
+        
+        // Simular generación de folio único
+        $orderNumber = 'ORD-' . strtoupper(Str::random(8));
+
+        // Vaciar el carrito
+        CartItem::where('user_id', $user->id)->delete();
+
+        return view('cart.success', compact('total', 'paymentMethod', 'orderNumber', 'cartItems'));
     }
 }
