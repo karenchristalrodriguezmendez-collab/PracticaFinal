@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CompanyController;
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderAdminController;
 
 Route::get("/", function (Request $request) {
     $search = $request->input("search");
@@ -109,6 +110,11 @@ Route::middleware(["auth", "security:auth"])->group(function () {
             UserController::class,
             "downloadAvatar",
         ])->name("users.download-avatar");
+
+        // Gestión de Pedidos Administrativa
+        Route::get('admin/orders', [OrderAdminController::class, 'index'])->name('admin.orders.index');
+        Route::get('admin/orders/{order}', [OrderAdminController::class, 'show'])->name('admin.orders.show');
+        Route::patch('admin/orders/{order}/status', [OrderAdminController::class, 'updateStatus'])->name('admin.orders.updateStatus');
     });
 
 });
