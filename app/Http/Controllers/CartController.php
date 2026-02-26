@@ -7,6 +7,9 @@ use App\Models\CartItem;
 use Illuminate\Support\Str;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
+use Stripe\Exception\ApiErrorException;
 
 class CartController extends Controller
 {
@@ -80,7 +83,7 @@ class CartController extends Controller
     public function checkout(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:card,oxxo,transfer',
+            'payment_method' => 'required|in:card,paypal,oxxo,transfer',
         ]);
 
         $user = auth()->user();
@@ -95,6 +98,37 @@ class CartController extends Controller
         });
 
         $paymentMethod = $request->payment_method;
+        $transactionId = null;
+
+        // Proceso de pago real con Stripe
+        if ($paymentMethod === 'card') {
+            if (!$request->stripe_payment_id) {
+                return redirect()->back()->with('error', 'Error en el método de pago.');
+            }
+
+            try {
+                Stripe::setApiKey(env('STRIPE_SECRET'));
+
+                $intent = PaymentIntent::create([
+                    'amount' => $total * 100, // Stripe usa centavos
+                    'currency' => 'mxn',
+                    'payment_method' => $request->stripe_payment_id,
+                    'confirmation_method' => 'manual',
+                    'confirm' => true,
+                    'return_url' => route('cart.success'), // Requerido para algunos métodos de confirmación
+                ]);
+
+                if ($intent->status === 'succeeded') {
+                    $transactionId = $intent->id;
+                } else {
+                    return redirect()->back()->with('error', 'El pago no pudo ser procesado. Estado: ' . $intent->status);
+                }
+            } catch (ApiErrorException $e) {
+                return redirect()->back()->with('error', 'Error de Stripe: ' . $e->getMessage());
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Ocurrió un error inesperado al procesar el pago.');
+            }
+        }
         
         // Simular generación de folio único
         $orderNumber = 'ORD-' . strtoupper(Str::random(8));
@@ -106,7 +140,7 @@ class CartController extends Controller
             'total' => $total,
             'payment_method' => $paymentMethod,
             'status' => ($paymentMethod == 'card' || $paymentMethod == 'paypal') ? 'completed' : 'pending',
-            'transaction_id' => $request->stripe_payment_id ?? $request->paypal_order_id ?? null,
+            'transaction_id' => ($paymentMethod == 'card') ? $transactionId : (($paymentMethod == 'paypal') ? ($request->paypal_order_id ?? null) : null),
             'reference' => ($paymentMethod == 'oxxo' || $paymentMethod == 'transfer') ? rand(1000000000, 9999999999) : null
         ]);
 

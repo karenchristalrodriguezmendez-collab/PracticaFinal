@@ -270,30 +270,36 @@
                 form.addEventListener('submit', async function(e) {
                     const method = document.querySelector('input[name="payment_method"]:checked').value;
                     
-                    if (method === 'card' && stripe) {
-                        e.preventDefault();
-                        confirmBtn.disabled = true;
-                        
-                        const {paymentMethod, error} = await stripe.createPaymentMethod({
-                            type: 'card',
-                            card: card,
-                        });
+                    if (method === 'card') {
+                        if (stripe && card) {
+                            e.preventDefault();
+                            confirmBtn.disabled = true;
+                            
+                            const {paymentMethod, error} = await stripe.createPaymentMethod({
+                                type: 'card',
+                                card: card,
+                            });
 
-                        if (error) {
-                            const errorElement = document.getElementById('stripe-errors');
-                            errorElement.textContent = error.message;
-                            confirmBtn.disabled = false;
+                            if (error) {
+                                const errorElement = document.getElementById('stripe-errors');
+                                errorElement.textContent = error.message;
+                                confirmBtn.disabled = false;
+                            } else {
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'stripe_payment_id';
+                                hiddenInput.value = paymentMethod.id;
+                                form.appendChild(hiddenInput);
+                                form.submit();
+                            }
                         } else {
-                            const hiddenInput = document.createElement('input');
-                            hiddenInput.type = 'hidden';
-                            hiddenInput.name = 'stripe_payment_id';
-                            hiddenInput.value = paymentMethod.id;
-                            form.appendChild(hiddenInput);
-                            form.submit();
+                            e.preventDefault();
+                            alert('Stripe no está configurado correctamente.');
                         }
                     } else if (method === 'paypal') {
                         e.preventDefault(); // Handled by PayPal JS
                     }
+                    // For oxxo and transfer, the form submits normally
                 });
 
                 // Style active option
