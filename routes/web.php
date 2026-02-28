@@ -15,6 +15,10 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderAdminController;
 
+Route::get('/test-colors', function () {
+    return view('test-colors');
+});
+
 Route::get("/", function (Request $request) {
     $search = $request->input("search");
     $query = \App\Models\Product::query();

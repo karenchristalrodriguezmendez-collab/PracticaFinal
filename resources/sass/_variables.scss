@@ -1,3 +1,18 @@
+// Brand Colors
+$brand-cream: #E6EADD;
+$brand-tan: #BA9B72;
+$brand-olive: #A2A58D;
+$brand-green: #58624A;
+$brand-black: #2D2D26;
+
+:root {
+    --brand-cream: #{$brand-cream};
+    --brand-tan: #{$brand-tan};
+    --brand-olive: #{$brand-olive};
+    --brand-green: #{$brand-green};
+    --brand-black: #{$brand-black};
+}
+
 // Body
 $body-bg: #f8fafc;
 
