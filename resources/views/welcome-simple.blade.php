@@ -124,9 +124,14 @@ $(document).ready(function() {
                     // Visual feedback
                     const btn = form.find('button');
                     const originalHtml = btn.html();
-                    btn.html('<i class="bi bi-check-lg"></i> Listo').removeClass('btn-primary').addClass('btn-success');
+                    const originalBg = btn.css('background-color');
+                    
+                    btn.html('<i class="bi bi-check-lg"></i> Listo')
+                       .css('background-color', '#58624A');
+
                     setTimeout(() => {
-                        btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');
+                        btn.html(originalHtml)
+                           .css('background-color', '#A2A58D');
                     }, 2000);
                 }
             },

@@ -4,16 +4,17 @@
 <div class="container">
     <div class="row justify-content-center mb-4">
         <div class="col-md-12">
-            <div class="card border-0 shadow-sm bg-primary bg-gradient text-white">
+            <div class="card border-0 shadow-sm text-white" style="background-color: #58624A;">
                 <div class="card-body p-4">
                     <h2 class="h4 mb-3">¡Hola, {{ Auth::user()->name }}! ¿Qué estás buscando hoy?</h2>
                     <form action="{{ route('home') }}" method="GET" class="d-flex gap-2">
                         <div class="input-group">
-                            <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
-                            <input type="text" name="search" class="form-control border-0" 
+                            <span class="input-group-text border-0 text-white" style="background-color: #BA9B72;"><i class="bi bi-search"></i></span>
+                            <input type="text" name="search" class="form-control border-0 text-white placeholder-white" 
+                                style="background-color: #BA9B72;"
                                 placeholder="Busca por nombre o descripción..." 
                                 value="{{ $search ?? '' }}">
-                            <button class="btn btn-light" type="submit">Buscar</button>
+                            <button class="btn btn-light text-brand-green fw-bold" type="submit">Buscar</button>
                         </div>
                         @if(isset($search) && $search != '')
                             <a href="{{ route('home') }}" class="btn btn-outline-light"><i class="bi bi-x-lg"></i></a>
@@ -38,15 +39,15 @@
                             </div>
                         @endif
                         <div class="card-body">
-                            <h5 class="card-title text-primary">{{ $product->name }}</h5>
+                            <h5 class="card-title text-brand-green fw-bold">{{ $product->name }}</h5>
                             <p class="card-text text-muted small">{{ Str::limit($product->description, 80) }}</p>
                             <div class="d-flex justify-content-between align-items-center mt-3">
-                                <span class="h5 mb-0 text-success">${{ number_format($product->price, 2) }}</span>
+                                <span class="h5 mb-0 text-brand-tan fw-bold">${{ number_format($product->price, 2) }}</span>
                                 <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form shadow-none">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                                    <button type="submit" class="btn text-white btn-sm rounded-pill px-4 transition-transform hover:scale-105 shadow-sm" style="background-color: #A2A58D;">
                                         <i class="bi bi-plus-lg me-1"></i> Comprar
                                     </button>
                                 </form>
@@ -80,9 +81,9 @@
         transition: all 0.3s ease;
     }
     .pagination-modern .page-item.active .page-link {
-        background-color: var(--bs-primary);
+        background-color: #58624A;
         color: white;
-        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        box-shadow: 0 4px 10px rgba(88, 98, 74, 0.3);
     }
     .pagination-modern .page-link:hover:not(.active) {
         background-color: #f8faf8;
@@ -119,9 +120,14 @@ $(document).ready(function() {
                     // Visual feedback
                     const btn = form.find('button');
                     const originalHtml = btn.html();
-                    btn.html('<i class="bi bi-check-lg"></i> Listo').removeClass('btn-primary').addClass('btn-success');
+                    const originalBg = btn.css('background-color');
+                    
+                    btn.html('<i class="bi bi-check-lg"></i> Listo')
+                       .css('background-color', '#58624A');
+
                     setTimeout(() => {
-                        btn.html(originalHtml).removeClass('btn-success').addClass('btn-primary');
+                        btn.html(originalHtml)
+                           .css('background-color', '#A2A58D');
                     }, 2000);
                 }
             },
