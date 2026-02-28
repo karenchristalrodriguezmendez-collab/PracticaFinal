@@ -17,7 +17,7 @@
                 <i class="bi bi-cart-x fs-1 text-muted"></i>
                 <h2 class="mt-3">Tu carrito está vacío</h2>
                 <p class="text-muted">Parece que aún no has añadido ningún producto.</p>
-                <a href="{{ url('/') }}" class="btn btn-primary mt-3 px-4 rounded-pill">Ir a la tienda</a>
+                <a href="{{ url('/') }}" class="btn text-white mt-3 px-4 rounded-pill" style="background-color: #58624A;">Ir a la tienda</a>
             </div>
         </div>
     @else
@@ -94,12 +94,12 @@
                         </div>
                         <div class="d-flex justify-content-between mb-4">
                             <span class="text-muted">Envío</span>
-                            <span class="badge bg-success">Gratis</span>
+                            <span class="badge text-white" style="background-color: #58624A;">Gratis</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-4">
                             <span class="h5">Total</span>
-                            <span class="h5 text-primary">${{ number_format($total, 2) }}</span>
+                            <span class="h5 fw-bold" style="color: #58624A;">${{ number_format($total, 2) }}</span>
                         </div>
                         
                         <div id="payment-section" style="display: none;">
@@ -159,13 +159,13 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" id="confirm-payment-btn" class="btn btn-success w-100 py-2 rounded-pill mb-2">
+                                <button type="submit" id="confirm-payment-btn" class="btn text-white w-100 py-2 rounded-pill mb-2" style="background-color: #58624A;">
                                     Confirmar y Pagar
                                 </button>
                             </form>
                         </div>
 
-                        <button id="show-payment" class="btn btn-primary w-100 py-2 rounded-pill mb-2">Proceder al pago</button>
+                        <button id="show-payment" class="btn text-white w-100 py-2 rounded-pill mb-2" style="background-color: #58624A;">Proceder al pago</button>
                         <a href="{{ url('/') }}" class="btn btn-outline-secondary w-100 py-2 rounded-pill">Seguir comprando</a>
                     </div>
                 </div>

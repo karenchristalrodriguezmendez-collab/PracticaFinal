@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="container">
-    <div class="card mb-4 border-0 shadow-sm bg-brand-green text-white">
+    <div class="card mb-4 border-0 shadow-sm text-white" style="background-color: #58624A;">
                 <div class="card-body p-4">
                     <h2 class="h4 mb-3">¿Qué estás buscando hoy?</h2>
                     <form action="{{ url('/') }}" method="GET" class="d-flex gap-2">
                         <div class="input-group">
-                            <span class="input-group-text border-0 text-white" style="background-color: #A2A58D;"><i class="bi bi-search"></i></span>
+                            <span class="input-group-text border-0 text-white" style="background-color: #BA9B72;"><i class="bi bi-search"></i></span>
                             <input type="text" name="search" class="form-control border-0 text-white placeholder-white" 
-                                style="background-color: #A2A58D;"
+                                style="background-color: #BA9B72;"
                                 placeholder="Busca por nombre o descripción..." 
                                 value="{{ $search ?? '' }}">
                             <button class="btn btn-light text-brand-green fw-bold" type="submit">Buscar</button>
