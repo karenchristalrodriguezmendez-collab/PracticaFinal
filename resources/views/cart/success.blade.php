@@ -6,7 +6,7 @@
         <div class="col-md-7">
             <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
                 <div class="card-body p-0">
-                    <div class="bg-success bg-gradient text-white text-center py-5">
+                    <div class="text-white text-center py-5" style="background-color: #58624A;">
                         <i class="bi bi-check-circle-fill display-1 mb-3"></i>
                         <h2 class="fw-bold">¡Compra Exitosa!</h2>
                         <p class="mb-0 opacity-75">Tu pedido #{{ $orderNumber }} ha sido registrado</p>
@@ -20,7 +20,7 @@
                             </div>
                             <div class="text-end">
                                 <span class="text-muted d-block small text-uppercase fw-bold">Total Pagado</span>
-                                <span class="h4 fw-bold text-success mb-0">${{ number_format($total, 2) }}</span>
+                                <span class="h4 fw-bold mb-0" style="color: #58624A;">${{ number_format($total, 2) }}</span>
                             </div>
                         </div>
 
@@ -64,7 +64,7 @@
                         @elseif($paymentMethod == 'transfer')
                             <div class="payment-receipt bg-light rounded-4 p-4 border">
                                 <div class="d-flex align-items-center mb-4">
-                                    <i class="bi bi-bank fs-2 text-primary me-3"></i>
+                                    <i class="bi bi-bank fs-2 me-3" style="color: #58624A;"></i>
                                     <h5 class="fw-bold mb-0">Datos para Transferencia (SPEI)</h5>
                                 </div>
                                 
@@ -81,14 +81,14 @@
                                         <label class="small text-muted d-block">Referencia Única</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control fw-bold border-0 bg-white" value="{{ $reference }}" readonly>
-                                            <button class="btn btn-outline-primary border-0" type="button" onclick="copyClabe()">
+                                            <button class="btn border-0" style="color: #58624A;" type="button" onclick="copyClabe()">
                                                 <i class="bi bi-copy"></i>
                                             </button>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <label class="small text-muted d-block">CLABE Interbancaria</label>
-                                        <span class="fw-bold text-primary">0121 8000 1234 5678 90</span>
+                                        <span class="fw-bold" style="color: #58624A;">0121 8000 1234 5678 90</span>
                                     </div>
                                 </div>
                                 
@@ -100,15 +100,15 @@
 
                         @else
                             <div class="text-center py-4 bg-light rounded-4 border">
-                                <i class="bi bi-credit-card-2-front fs-1 text-primary mb-3"></i>
+                                <i class="bi bi-credit-card-2-front fs-1 mb-3" style="color: #58624A;"></i>
                                 <h5 class="fw-bold">Pago con Tarjeta Confirmado</h5>
                                 <p class="text-muted small">Hemos procesado tu cargo de manera segura.</p>
-                                <span class="badge bg-success py-2 px-3 rounded-pill">Autorizado: #{{ rand(100000, 999999) }}</span>
+                                <span class="badge py-2 px-3 rounded-pill" style="background-color: #58624A;">Autorizado: #{{ rand(100000, 999999) }}</span>
                             </div>
                         @endif
 
                         <div class="mt-5 d-flex gap-2">
-                            <a href="{{ route('home') }}" class="btn btn-primary w-100 py-3 rounded-pill fw-bold">
+                            <a href="{{ route('home') }}" class="btn text-white w-100 py-3 rounded-pill fw-bold" style="background-color: #58624A;">
                                 Volver al Inicio
                             </a>
                             <button onclick="window.print()" class="btn btn-outline-secondary w-100 py-3 rounded-pill fw-bold">
@@ -133,7 +133,7 @@
 
 <style>
     .letter-spacing-2 { letter-spacing: 2px; }
-    .bg-gradient { background: linear-gradient(135deg, #198754 0%, #157347 100%) !important; }
+    .bg-gradient { background: linear-gradient(135deg, #58624A 0%, #464e3b 100%) !important; }
     .payment-receipt { transition: transform 0.3s ease; }
     .payment-receipt:hover { transform: translateY(-5px); }
 </style>
