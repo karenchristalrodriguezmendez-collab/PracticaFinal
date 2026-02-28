@@ -78,7 +78,7 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     @role('admin')
-                                        <a class="dropdown-item fw-bold text-primary" href="{{ route('admin.orders.index') }}">
+                                        <a class="dropdown-item fw-bold text-brand-green" href="{{ route('admin.orders.index') }}">
                                             <i class="bi bi-box-seam me-1"></i> Administrar Pedidos
                                         </a>
                                         <hr class="dropdown-divider">

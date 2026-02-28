@@ -85,7 +85,7 @@
         box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
     }
     .pagination-modern .page-link:hover:not(.active) {
-        background-color: #f8f9fa;
+        background-color: #f8faf8;
         color: var(--bs-primary);
     }
 </style>
