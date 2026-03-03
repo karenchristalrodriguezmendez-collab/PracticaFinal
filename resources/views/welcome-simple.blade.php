@@ -1,75 +1,140 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="card mb-4 border-0 shadow-sm text-white" style="background-color: #58624A;">
-                <div class="card-body p-4">
-                    <h2 class="h4 mb-3">¿Qué estás buscando hoy?</h2>
-                    <form action="{{ url('/') }}" method="GET" class="d-flex gap-2">
-                        <div class="input-group">
-                            <span class="input-group-text border-0 text-white" style="background-color: #BA9B72;"><i class="bi bi-search"></i></span>
-                            <input type="text" name="search" class="form-control border-0 text-white placeholder-white" 
-                                style="background-color: #BA9B72;"
-                                placeholder="Busca por nombre o descripción..." 
-                                value="{{ $search ?? '' }}">
-                            <button class="btn btn-light text-brand-green fw-bold" type="submit">Buscar</button>
-                        </div>
-                        @if(isset($search) && $search != '')
-                            <a href="{{ url('/') }}" class="btn btn-outline-light"><i class="bi bi-x-lg"></i></a>
-                        @endif
-                    </form>
+<div class="container-fluid p-0 mb-5 mt-n4">
+    <!-- Hero Banner -->
+    <div class="hero-banner position-relative overflow-hidden" style="height: 450px; background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('{{ asset('images/banner.png') }}'); background-size: cover; background-position: center;">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-md-6 text-white">
+                    <span class="badge bg-white text-brand-green px-3 py-2 rounded-pill mb-3 fw-bold">NUEVA COLECCIÓN</span>
+                    <h1 class="display-3 fw-bold mb-3">Naturalmente <br>Saludable</h1>
+                    <p class="lead mb-4 shadow-sm text-shadow">Descubre nuestra selección premium de productos orgánicos y ecológicos para tu bienestar diario.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#productos" class="btn btn-light btn-lg px-5 rounded-pill fw-bold text-brand-green">Ver Productos</a>
+                        <a href="{{ route('companies.index') }}" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-bold">Ver Marcas</a>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <div class="mt-5">
-                <h3 class="mb-4">Nuestros Productos</h3>
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                    @foreach($products as $product)
-                        <div class="col">
-                            <div class="card h-100 shadow-sm border-0">
-                                @if($product->hasImage())
-                                    <img src="{{ $product->image_url }}" class="card-img-top" alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
-                                @else
-                                    <div class="bg-light d-flex align-items-center justify-content-center card-img-top" style="height: 200px;">
-                                        <i class="bi bi-image text-muted fs-1"></i>
-                                    </div>
-                                @endif
-                                <div class="card-body">
-                                    <h5 class="card-title text-brand-green fw-bold">{{ $product->name }}</h5>
-                                    <p class="card-text text-muted small">{{ Str::limit($product->description, 80) }}</p>
-                                    <div class="d-flex justify-content-between align-items-center mt-3">
-                                        <span class="h5 mb-0 text-brand-tan fw-bold">${{ number_format($product->price, 2) }}</span>
-                                        @auth
-                                            <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form shadow-none">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn text-white btn-sm rounded-pill px-4 transition-transform hover:scale-105 shadow-sm" style="background-color: #A2A58D;">
-                                                    <i class="bi bi-plus-lg me-1"></i> Comprar
-                                                </button>
-                                            </form>
-                                        @else
-                                            <a href="{{ route('login') }}" class="btn border-brand-olive text-brand-olive btn-sm rounded-pill px-3 hover:bg-brand-olive hover:text-white transition-all">
-                                                <i class="bi bi-plus-lg me-1"></i> Comprar
-                                            </a>
-                                        @endauth
-                                    </div>
+<div class="container">
+    <!-- Categories Circle UI (Optional style) -->
+    <div class="row mb-5 text-center g-4">
+        <div class="col-6 col-md-2">
+            <div class="cat-item shadow-sm rounded-circle p-4 mb-2 mx-auto" style="width: 100px; height: 100px; background: #f8faf8;">
+                <i class="bi bi-droplet-fill fs-2 text-brand-green"></i>
+            </div>
+            <span class="fw-bold small">Aceites</span>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="cat-item shadow-sm rounded-circle p-4 mb-2 mx-auto" style="width: 100px; height: 100px; background: #f8faf8;">
+                <i class="bi bi-flower1 fs-2 text-brand-green"></i>
+            </div>
+            <span class="fw-bold small">Herbolaria</span>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="cat-item shadow-sm rounded-circle p-4 mb-2 mx-auto" style="width: 100px; height: 100px; background: #f8faf8;">
+                <i class="bi bi-egg-fill fs-2 text-brand-green"></i>
+            </div>
+            <span class="fw-bold small">Alimentos</span>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="cat-item shadow-sm rounded-circle p-4 mb-2 mx-auto" style="width: 100px; height: 100px; background: #f8faf8;">
+                <i class="bi bi-stars fs-2 text-brand-green"></i>
+            </div>
+            <span class="fw-bold small">Cosmética</span>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="cat-item shadow-sm rounded-circle p-4 mb-2 mx-auto" style="width: 100px; height: 100px; background: #f8faf8;">
+                <i class="bi bi-house-heart-fill fs-2 text-brand-green"></i>
+            </div>
+            <span class="fw-bold small">Hogar</span>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="cat-item shadow-sm rounded-circle p-4 mb-2 mx-auto" style="width: 100px; height: 100px; background: #f8faf8;">
+                <i class="bi bi-gift-fill fs-2 text-brand-green"></i>
+            </div>
+            <span class="fw-bold small">Regalos</span>
+        </div>
+    </div>
+
+    <!-- Promo Card -->
+    <div class="card border-0 rounded-4 mb-5 overflow-hidden shadow-sm" style="background-color: #f1f3f1;">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-7 p-5">
+                <h2 class="fw-bold mb-3">¡Sólo en la Web!</h2>
+                <p class="mb-4">Consigue un 10% adicional en tu primer pedido usando el cupón <strong class="text-brand-green">YANA10</strong></p>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="h1 mb-0 fw-bold text-brand-green">-10%</span>
+                    <button class="btn btn-dark text-white rounded-pill px-4 py-2 fw-bold">Copiar Cupón</button>
+                </div>
+            </div>
+            <div class="col-md-5 d-none d-md-block">
+                <img src="{{ asset('images/promo_image.png') }}" alt="Promo" class="img-fluid h-100" style="object-fit: cover;">
+            </div>
+        </div>
+    </div>
+
+    <div id="productos" class="mt-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h3 class="fw-bold mb-0">Nuestros Productos</h3>
+                <p class="text-muted small mb-0">Selección recomendada para ti</p>
+            </div>
+            <a href="#" class="text-brand-green fw-bold text-decoration-none small">Ver todos los productos <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            @foreach($products as $product)
+                <div class="col">
+                    <div class="card h-100 shadow-hover border-0 rounded-3 overflow-hidden">
+                        <div class="position-relative">
+                            @if($product->hasImage())
+                                <img src="{{ $product->image_url }}" class="card-img-top" alt="{{ $product->name }}" style="height: 220px; object-fit: cover;">
+                            @else
+                                <div class="bg-light d-flex align-items-center justify-content-center card-img-top" style="height: 220px;">
+                                    <i class="bi bi-image text-muted fs-1"></i>
                                 </div>
+                            @endif
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <button class="btn btn-white btn-sm rounded-circle shadow-sm" type="button"><i class="bi bi-heart text-brand-green"></i></button>
                             </div>
                         </div>
-                    @endforeach
-                </div>
-
-                <div class="d-flex justify-content-center mt-5">
-                    {{ $products->appends(['search' => $search ?? ''])->links('vendor.pagination.bootstrap-5') }}
-                </div>
-                @if($products->isEmpty())
-                    <div class="alert alert-info text-center py-4">
-                        <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
-                        No hay productos disponibles en este momento.
+                        <div class="card-body p-3">
+                            <p class="text-uppercase text-muted x-small mb-1 fw-bold">YANA NATURAL</p>
+                            <h6 class="card-title fw-bold mb-2">{{ $product->name }}</h6>
+                            <div class="d-flex align-items-center mb-3 text-warning small">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                                <span class="ms-1 text-muted">(4.5)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 fw-bold text-dark">${{ number_format($product->price, 2) }}</span>
+                                @auth
+                                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form shadow-none">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-brand-green btn-sm rounded-pill px-3 fw-bold text-white">
+                                            <i class="bi bi-cart-plus"></i> Añadir
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn btn-outline-brand-green btn-sm rounded-pill px-3 fw-bold">
+                                        <i class="bi bi-cart-plus"></i> Añadir
+                                    </a>
+                                @endauth
+                            </div>
+                        </div>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="d-flex justify-content-center mt-5">
+            {{ $products->appends(['search' => $search ?? ''])->links('vendor.pagination.bootstrap-5') }}
         </div>
     </div>
 </div>

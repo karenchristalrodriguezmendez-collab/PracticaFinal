@@ -20,8 +20,8 @@ class CartController extends Controller
             return $item->product->price * $item->quantity;
         });
 
-        $stripeKey = env('STRIPE_KEY');
-        $paypalClientId = env('PAYPAL_CLIENT_ID');
+        $stripeKey = config('services.stripe.key');
+        $paypalClientId = config('services.paypal.client_id');
 
         return view('cart.index', compact('cartItems', 'total', 'stripeKey', 'paypalClientId'));
     }
@@ -107,7 +107,7 @@ class CartController extends Controller
             }
 
             try {
-                Stripe::setApiKey(env('STRIPE_SECRET'));
+                Stripe::setApiKey(config('services.stripe.secret'));
 
                 $intent = PaymentIntent::create([
                     'amount' => $total * 100, // Stripe usa centavos

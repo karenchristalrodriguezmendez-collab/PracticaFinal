@@ -19,6 +19,34 @@
     <!-- Slot para CSS personalizado -->
     {{-- {{ $css ?? '' }} --}}
     @yield('css')
+
+    <style>
+        :root {
+            --brand-green: #58624A;
+            --brand-tan: #BA9B72;
+            --bs-primary: #58624A;
+            --bs-primary-rgb: 88, 98, 74;
+        }
+        .btn-primary {
+            background-color: var(--brand-green) !important;
+            border-color: var(--brand-green) !important;
+        }
+        .btn-primary:hover {
+            background-color: #3d4433 !important;
+            border-color: #3d4433 !important;
+        }
+        .text-primary { color: var(--brand-green) !important; }
+        .page-item.active .page-link {
+            background-color: var(--brand-green) !important;
+            border-color: var(--brand-green) !important;
+        }
+        .page-link { color: var(--brand-green); }
+        .form-control:focus {
+            border-color: var(--brand-green);
+            box-shadow: 0 0 0 0.25rem rgba(88, 98, 74, 0.25);
+        }
+        .navbar-brand { font-weight: bold; color: var(--brand-green) !important; }
+    </style>
 </head>
 
 <body>

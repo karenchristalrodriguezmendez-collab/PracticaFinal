@@ -118,4 +118,8 @@ Route::middleware(["auth", "security:auth"])->group(function () {
         Route::patch('admin/orders/{order}/status', [OrderAdminController::class, 'updateStatus'])->name('admin.orders.updateStatus');
     });
 
+    // Pedidos del Usuario (Historial)
+    Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+
 });
