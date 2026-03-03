@@ -126,8 +126,8 @@
                 <div class="row align-items-center">
                     <!-- Logo -->
                     <div class="col-6 col-md-3 mb-3 mb-md-0">
-                        <a class="navbar-brand d-flex align-items-center d-inline-block text-decoration-none" href="{{ url('/') }}">
-                            <img src="{{ asset('images/logo.png') }}" alt="EcoSkin Cosmetics" style="height: 50px; object-fit: contain;" onerror="this.onerror=null; this.insertAdjacentHTML('afterend', '<span class=\'h4 mb-0 fw-bold\' style=\'color: #58624A; letter-spacing: 1px;\'>ECOSKIN</span>'); this.style.display='none';">
+                        <a class="navbar-brand py-0 d-flex align-items-center text-decoration-none" href="{{ url('/') }}">
+                            <span class="fw-bold fs-3 text-brand-green" style="letter-spacing: 1px; font-family: 'Outfit', sans-serif;">EcoSkin <small class="fw-normal text-muted" style="font-size: 0.6em;">Cosmetics</small></span>
                         </a>
                     </div>
 
