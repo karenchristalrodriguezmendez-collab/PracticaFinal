@@ -104,7 +104,7 @@
                             </div>
                         </div>
                         <div class="card-body p-3">
-                            <p class="text-uppercase text-muted x-small mb-1 fw-bold">YANA NATURAL</p>
+                            <p class="text-uppercase text-muted x-small mb-1 fw-bold">ECOSKIN NATURAL</p>
                             <h6 class="card-title fw-bold mb-2">{{ $product->name }}</h6>
                             <div class="d-flex align-items-center mb-3 text-warning small">
                                 <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
@@ -132,6 +132,16 @@
                 </div>
             @endforeach
         </div>
+
+        @if($products->isEmpty())
+            <div class="card border-0 shadow-sm p-5 text-center my-5 rounded-4 bg-light">
+                <div class="card-body">
+                    <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+                    <h3 class="fw-bold">No encontramos productos</h3>
+                    <p class="text-muted">Estamos preparando nuestras mejores ofertas para ti. ¡Vuelve pronto!</p>
+                </div>
+            </div>
+        @endif
 
         <div class="d-flex justify-content-center mt-5">
             {{ $products->appends(['search' => $search ?? ''])->links('vendor.pagination.bootstrap-5') }}

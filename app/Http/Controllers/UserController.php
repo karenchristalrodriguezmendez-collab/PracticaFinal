@@ -204,16 +204,18 @@ class UserController extends Controller
                 "created_at" => $user->created_at->format('Y-m-d H:i'),
                 "actions" =>
                     '
-                    <button class="btn btn-primary btn-sm" onclick="execute(\'/users/' .
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-primary btn-sm" onclick="execute(\'/users/' .
                     $user->id .
                     '/edit\')">
-                        <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteRecord(\'/users/' .
+                            <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord(\'/users/' .
                     $user->id .
                     '\')">
-                        <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Delete</span>
-                    </button>
+                            <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Delete</span>
+                        </button>
+                    </div>
                 ',
             ];
         });

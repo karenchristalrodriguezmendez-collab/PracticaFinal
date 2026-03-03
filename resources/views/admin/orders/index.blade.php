@@ -4,7 +4,7 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold mb-0">Gestión de Pedidos</h2>
-        <span class="badge bg-primary rounded-pill px-3 py-2">Total: {{ $orders->total() }}</span>
+        <span class="badge btn-brand-green rounded-pill px-3 py-2">Total: {{ $orders->total() }}</span>
     </div>
 
     <div class="card border-0 shadow-sm" style="border-radius: 15px;">
@@ -28,8 +28,8 @@
                             <td class="ps-4 fw-bold text-primary">{{ $order->order_number }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-soft-primary rounded-circle p-2 me-2">
-                                        <i class="bi bi-person text-primary"></i>
+                                    <div class="rounded-circle p-2 me-2" style="background-color: rgba(88, 98, 74, 0.1);">
+                                        <i class="bi bi-person text-brand-green"></i>
                                     </div>
                                     <span>{{ $order->user->name }}</span>
                                 </div>

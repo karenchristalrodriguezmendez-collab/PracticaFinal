@@ -25,7 +25,7 @@ Route::get("/", function (Request $request) {
               ->orWhere("description", "like", "%{$search}%");
     }
 
-    $products = $query->paginate(6);
+    $products = $query->latest()->paginate(8);
     return view("welcome-simple", compact("products", "search"));
 });
 

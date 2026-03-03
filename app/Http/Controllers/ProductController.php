@@ -251,16 +251,18 @@ class ProductController extends Controller
                 "price" => '$' . number_format($product->price, 2),
                 "actions" =>
                     '
-                    <button class="btn btn-primary btn-sm" onclick="execute(\'/products/' .
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-primary btn-sm" onclick="execute(\'/products/' .
                     $product->id .
                     '/edit\')">
-                        <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteRecord(\'/products/' .
+                            <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord(\'/products/' .
                     $product->id .
                     '\')">
-                        <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Delete</span>
-                    </button>
+                            <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Delete</span>
+                        </button>
+                    </div>
                 ',
             ];
         });
