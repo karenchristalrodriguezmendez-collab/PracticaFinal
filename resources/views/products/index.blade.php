@@ -80,9 +80,9 @@
             ],
             pageLength: 10, // Items por página
             lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            // language: {
-            //     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' // Opcional: español
-            // }
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+            }
         });
 
         function execute(url) {

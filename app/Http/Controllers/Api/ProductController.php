@@ -104,11 +104,19 @@ class ProductController extends Controller
     {
         try {
             $validated = $request->validate([
-                "name" => "required|string|max:100",
+                "name" => "required|string|max:40|unique:products,name",
                 "description" => "required|string|max:1000",
-                "price" => "required|numeric|min:0.01|max:9999999",
+                "price" => "required|numeric|min:1|max:9999999",
                 "image" =>
                     "nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120",
+            ], [
+                'name.required' => 'El nombre del producto es obligatorio.',
+                'name.unique' => 'Ya existe un producto con este nombre.',
+                'name.max' => 'El nombre no debe exceder los 40 caracteres.',
+                'price.required' => 'El precio es obligatorio.',
+                'price.numeric' => 'El precio debe ser un número.',
+                'price.min' => 'El precio debe ser de al menos 1.',
+                'description.required' => 'La descripción es obligatoria.',
             ]);
 
             // Crear producto
@@ -218,12 +226,20 @@ class ProductController extends Controller
     {
         try {
             $validated = $request->validate([
-                "name" => "required|string|max:40",
-                "price" => "required|numeric|min:.01|max:9999999.99",
+                "name" => "required|string|max:40|unique:products,name," . $product->id,
+                "price" => "required|numeric|min:1|max:9999999",
                 "description" => "required|string",
                 "image" =>
                     "nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120",
                 "remove_image" => "sometimes|boolean",
+            ], [
+                'name.required' => 'El nombre del producto es obligatorio.',
+                'name.unique' => 'Ya existe un producto con este nombre.',
+                'name.max' => 'El nombre no debe exceder los 40 caracteres.',
+                'price.required' => 'El precio es obligatorio.',
+                'price.numeric' => 'El precio debe ser un número.',
+                'price.min' => 'El precio debe ser de al menos 1.',
+                'description.required' => 'La descripción es obligatoria.',
             ]);
 
             // Actualizar campos básicos

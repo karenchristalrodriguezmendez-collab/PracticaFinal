@@ -83,14 +83,31 @@
                 </table>
             </div>
             
-            <div class="p-4 bg-light border-top">
-                {{ $orders->links() }}
+            <div class="p-4 bg-light border-top d-flex justify-content-center">
+                {{ $orders->links('vendor.pagination.bootstrap-5') }}
             </div>
         </div>
     </div>
 </div>
 
+@push('styles')
 <style>
-    .bg-soft-primary { background-color: rgba(13, 110, 253, 0.1); }
+    .pagination-modern .page-link {
+        border: none;
+        color: #6c757d;
+        margin: 0 2px;
+        border-radius: 5px !important;
+        transition: all 0.3s ease;
+    }
+    .pagination-modern .page-item.active .page-link {
+        background-color: #58624A;
+        color: white;
+        box-shadow: 0 4px 10px rgba(88, 98, 74, 0.3);
+    }
+    .pagination-modern .page-link:hover:not(.active) {
+        background-color: #f8faf8;
+        color: #58624A;
+    }
 </style>
+@endpush
 @endsection

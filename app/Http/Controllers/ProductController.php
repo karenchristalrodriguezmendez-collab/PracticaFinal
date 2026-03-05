@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 // use App\Http\Requests\ProductStoreRequest;
 // use App\Http\Requests\ProductUpdateRequest;
+use App\Models\ProductImage;
 use App\Models\Product;
 use App\Services\FileService;
-// use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-// use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -23,12 +22,14 @@ class ProductController extends Controller
     }
     public function index(Request $request)
     {
-        // $products = Product::all();
-
         return view("products.index", [
-            // 'products' => $products,
             "products" => collect(),
         ]);
+    }
+
+    public function show(Product $product)
+    {
+        return view("products.show", compact("product"));
     }
 
     public function create(Request $request)
@@ -39,40 +40,19 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
-            // Debug: Verificar si hay archivo
-            Log::info("Store method called");
-            Log::info("All request data:", $request->all());
-            Log::info("All files:", $request->allFiles());
-            Log::info(
-                "Has file image: " .
-                    ($request->hasFile("image") ? "YES" : "NO"),
-            );
-            if ($request->hasFile("image")) {
-                $file = $request->file("image");
-                Log::info(
-                    "File info: " .
-                        json_encode([
-                            "name" => $file->getClientOriginalName(),
-                            "size" => $file->getSize(),
-                            "mime" => $file->getMimeType(),
-                            "valid" => $file->isValid(),
-                            "error" => $file->getError(),
-                        ]),
-                );
-            }
-
             $id = $request->input("id", null);
 
-            // validar los inputs del request (sin validación de imagen por ahora)
             $validated = $request->validate([
                 "name" => [
                     "required",
                     "string",
                     "max:40",
-                    $id ? "unique:products,name,$id" : "unique:products,name"
+                    "unique:products,name" . ($id ? "," . $id : ""),
                 ],
                 "price" => "required|numeric|min:1|max:9999999",
                 "description" => "required|string",
+                "image" => "nullable",
+                "image.*" => "image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120",
             ], [
                 'name.required' => 'El nombre del producto es obligatorio.',
                 'name.unique' => 'Ya existe un producto con este nombre.',
@@ -83,65 +63,114 @@ class ProductController extends Controller
                 'description.required' => 'La descripción es obligatoria.',
             ]);
 
-            // No agregar imagen al validated array ya que no está validada
-            // La procesaremos por separado
-
             if ($id) {
-                // actualizar producto existente
                 $product = Product::findOrFail($id);
-                $oldImage = $product->image;
+                $product->update($validated);
+                $message = "Producto actualizado exitosamente.";
+            } else {
+                $product = Product::create($validated);
+                $message = "Producto registrado exitosamente.";
+            }
 
-                // Actualizar campos básicos
-                $product->fill($validated);
-                $product->save();
-
-                // Procesar nueva imagen si se subió
-                if ($request->hasFile("image")) {
-                    $uploadResult = $this->fileService->upload(
-                        $request->file("image"),
-                        "products",
-                    );
+            // Procesar múltiples imágenes
+            if ($request->hasFile("image")) {
+                $hasExistingPrimary = $product->images()->where('is_primary', true)->exists();
+                $files = is_array($request->file("image")) ? $request->file("image") : [$request->file("image")];
+                
+                foreach ($files as $index => $file) {
+                    $uploadResult = $this->fileService->upload($file, "products");
 
                     if ($uploadResult["success"]) {
-                        $product->image = $uploadResult["path"];
-                        $product->save();
+                        $isPrimary = !$hasExistingPrimary && $index === 0;
+                        $product->images()->create([
+                            "image_path" => $uploadResult["path"],
+                            "is_primary" => $isPrimary,
+                        ]);
 
-                        // Eliminar imagen anterior si existe
-                        if ($oldImage) {
-                            $this->fileService->delete($oldImage);
+                        // Mantener compatibilidad con columna legacy (opcional)
+                        if ($isPrimary) {
+                            $product->image = $uploadResult["path"];
+                            $product->save();
                         }
                     }
                 }
-            } else {
-                // agregar producto nuevo (sin imagen primero)
-                $product = Product::create($validated);
+            }
 
-                // Procesar imagen para producto nuevo
-                if ($request->hasFile("image")) {
-                    Log::info("Processing new product image");
-                    $uploadResult = $this->fileService->upload(
-                        $request->file("image"),
-                        "products",
-                    );
+            return redirect()
+                ->route("products.index")
+                ->with("success", $message);
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with("error", $e->getMessage());
+        }
+    }
 
-                    Log::info("Upload result: " . json_encode($uploadResult));
+    public function update(Request $request, Product $product)
+    {
+        try {
+            $validated = $request->validate([
+                "name" => [
+                    "required",
+                    "string",
+                    "max:40",
+                    "unique:products,name," . $product->id
+                ],
+                "price" => "required|numeric|min:1|max:9999999",
+                "description" => "required|string",
+                "image" => "nullable|array",
+                "image.*" => "image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120",
+                "deleted_images" => "nullable|array",
+            ], [
+                'name.required' => 'El nombre del producto es obligatorio.',
+                'name.unique' => 'Ya existe un producto con este nombre.',
+                'name.max' => 'El nombre no debe exceder los 40 caracteres.',
+                'price.required' => 'El precio es obligatorio.',
+                'price.numeric' => 'El precio debe ser un número.',
+                'price.min' => 'El precio debe ser de al menos 1.',
+                'description.required' => 'La descripción es obligatoria.',
+            ]);
 
-                    if ($uploadResult["success"]) {
-                        $product->image = $uploadResult["path"];
-                        $product->save();
-                        Log::info(
-                            "Image path saved: " . $uploadResult["path"],
-                        );
-                    } else {
-                        Log::error(
-                            "Image upload failed: " . $uploadResult["message"],
-                        );
+            $product->update($validated);
+
+            // Eliminar imágenes marcadas
+            if ($request->has("deleted_images")) {
+                foreach ($request->deleted_images as $imageId) {
+                    $img = ProductImage::find($imageId);
+                    if ($img && $img->product_id === $product->id) {
+                        $this->fileService->delete($img->image_path);
+                        $img->delete();
                     }
                 }
             }
+
+            // Procesar nuevas imágenes
+            if ($request->hasFile("image")) {
+                $hasExistingPrimary = $product->images()->where('is_primary', true)->exists();
+                foreach ($request->file("image") as $index => $file) {
+                    $uploadResult = $this->fileService->upload($file, "products");
+
+                    if ($uploadResult["success"]) {
+                        $product->images()->create([
+                            "image_path" => $uploadResult["path"],
+                            "is_primary" => !$hasExistingPrimary && $index === 0,
+                        ]);
+
+                        // Actualizar legacy si no hay primaria o esta es la nueva primera
+                        if (!$hasExistingPrimary && $index === 0) {
+                            $product->image = $uploadResult["path"];
+                            $product->save();
+                        }
+                    }
+                }
+            }
+
             return redirect()
                 ->route("products.index")
-                ->with("success", "Producto registrado exitosamente.");
+                ->with("success", "Producto actualizado exitosamente.");
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
@@ -229,7 +258,16 @@ class ProductController extends Controller
         // TODO: Formatear del lado del cliente
         $data = $data->map(function ($product) {
             $imageHtml = "";
-            if (
+            $primaryImage = $product->images()->where('is_primary', true)->first() ?? $product->images()->first();
+            
+            if ($primaryImage && Storage::disk("public")->exists($primaryImage->image_path)) {
+                $imageHtml =
+                    '<img src="' .
+                    asset("storage/" . $primaryImage->image_path) .
+                    '" alt="' .
+                    $product->name .
+                    '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">';
+            } elseif (
                 $product->image &&
                 Storage::disk("public")->exists($product->image)
             ) {
