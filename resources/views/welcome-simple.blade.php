@@ -61,23 +61,6 @@
         </div>
     </div>
 
-    <!-- Promo Card -->
-    <div class="card border-0 rounded-4 mb-5 overflow-hidden shadow-sm" style="background-color: #f1f3f1;">
-        <div class="row g-0 align-items-center">
-            <div class="col-md-7 p-5">
-                <h2 class="fw-bold mb-3">¡Sólo en la Web!</h2>
-                <p class="mb-4">Consigue un 10% adicional en tu primer pedido usando el cupón <strong class="text-brand-green">YANA10</strong></p>
-                <div class="d-flex align-items-center gap-3">
-                    <span class="h1 mb-0 fw-bold text-brand-green">-10%</span>
-                    <button class="btn btn-dark text-white rounded-pill px-4 py-2 fw-bold">Copiar Cupón</button>
-                </div>
-            </div>
-            <div class="col-md-5 d-none d-md-block">
-                <img src="{{ asset('images/promo_image.png') }}" alt="Promo" class="img-fluid h-100" style="object-fit: cover;">
-            </div>
-        </div>
-    </div>
-
     <div id="productos" class="mt-5">
         <div class="d-flex justify-content-between align-items-end mb-4">
             <div>
@@ -113,7 +96,6 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
                             <!-- Swiper navigation arrows -->
                             <div class="swiper-button-next swiper-button-sm"></div>
                             <div class="swiper-button-prev swiper-button-sm"></div>
@@ -123,7 +105,7 @@
                         </div>
 
                         <div class="card-body p-4">
-                            <p class="text-uppercase text-muted x-small mb-1 fw-bold tracking-wider">ECOSKIN NATURAL</p>
+                            <p class="text-uppercase text-muted x-small mb-1 fw-bold tracking-wider">YANA NATURAL</p>
                             <h6 class="card-title fw-bold mb-2">{{ $product->name }}</h6>
                             <div class="d-flex align-items-center mb-3 text-warning small">
                                 <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
