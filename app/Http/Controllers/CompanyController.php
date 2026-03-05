@@ -158,9 +158,9 @@ class CompanyController extends Controller
         $recordsFiltered = $filteredRecords->count();
 
         // get y set Ordenación (columna y dirección)
-        $columns = ["name", "description", "id"]; // Orden de columnas en tabla
+        $columns = ["name", "description", "id"]; // Name (0), Description (1), Actions (2)
         $orderColumn = $request->input("order.0.column", 0);
-        $orderDir = $request->input("order.0.dir", "asc");
+        $orderDir = $request->input("order.0.dir", "desc");
         $query->orderBy($columns[$orderColumn] ?? "id", $orderDir);
 
         // Paginación

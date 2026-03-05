@@ -69,7 +69,7 @@ class ProductController extends Controller
                 $message = "Producto actualizado exitosamente.";
             } else {
                 $product = Product::create($validated);
-                $message = "Producto registrado exitosamente.";
+                $message = "Producto guardado exitosamente.";
             }
 
             // Procesar múltiples imágenes
@@ -244,9 +244,9 @@ class ProductController extends Controller
         $recordsFiltered = $filteredRecords->count();
 
         // get y set Ordenación (columna y dirección)
-        $columns = ["name", "description", "price", "id"]; // Orden de columnas en tabla
+        $columns = ["id", "name", "description", "price", "id"]; // Orden de columnas en tabla: Imagen (0), Name (1), Description (2), Price (3), Actions (4)
         $orderColumn = $request->input("order.0.column", 0);
-        $orderDir = $request->input("order.0.dir", "asc");
+        $orderDir = $request->input("order.0.dir", "desc");
         $query->orderBy($columns[$orderColumn] ?? "id", $orderDir);
 
         // Paginación

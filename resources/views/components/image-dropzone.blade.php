@@ -38,6 +38,23 @@
 ])
 
 @php
+    function getPhpMaxUploadSizeMb() {
+        $val = ini_get('upload_max_filesize');
+        $val = trim($val);
+        $last = strtolower($val[strlen($val)-1]);
+        $val = (int)$val;
+        switch($last) {
+            case 'g': $val *= 1024; break;
+            case 'm': break;
+            case 'k': $val /= 1024; break;
+        }
+        return $val;
+    }
+    
+    // Ensure maxSize doesn't exceed PHP's upload_max_filesize limit
+    $phpMaxSize = getPhpMaxUploadSizeMb();
+    $actualMaxSize = min($maxSize, $phpMaxSize > 0 ? $phpMaxSize : 2); // Default fallback 2MB
+
     $componentId = $id ?? 'imageDropzone_' . \Str::random(8);
     $inputId = $componentId . '_input';
     $dropzoneId = $componentId . '_dropzone';
@@ -47,7 +64,7 @@
     $overlayId = $componentId . '_overlay';
     $removeBtnId = $componentId . '_remove';
     $changeBtnId = $componentId . '_change';
-    $maxSizeBytes = $maxSize * 1024 * 1024;
+    $maxSizeBytes = $actualMaxSize * 1024 * 1024;
 
     // Asegurar que allowedTypes sea un array
     $allowedTypesArray = is_array($allowedTypes) ? $allowedTypes : ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp'];
@@ -98,7 +115,7 @@
                 </div>
                 <h5 class="text-primary fw-bold mb-2">{{ $title }}</h5>
                 <p class="text-muted mb-2">{{ $subtitle }}</p>
-                <small class="text-muted">{{ $helpText }} (máx. {{ $maxSize }}MB por imagen)</small>
+                <small class="text-muted">{{ $helpText }} (máx. {{ $actualMaxSize }}MB por imagen)</small>
             </div>
 
             <!-- Contenedor para múltiples vistas previas -->
@@ -195,15 +212,48 @@
                 });
 
                 function processFiles(files) {
-                    if (!config.multiple) {
-                        selectedFiles = [files[0]];
-                    } else {
-                        Array.from(files).forEach(file => {
-                            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                                selectedFiles.push(file);
-                            }
-                        });
+                    let hasErrors = false;
+                    let errorMessage = '';
+
+                    const validFiles = Array.from(files).filter(file => {
+                        if (!config.allowedTypes.includes(file.type)) {
+                            hasErrors = true;
+                            errorMessage += `El formato del archivo ${file.name} no está permitido.<br>`;
+                            return false;
+                        }
+                        if (file.size > config.maxSize) {
+                            hasErrors = true;
+                            const maxSizeMB = (config.maxSize / (1024 * 1024)).toFixed(0);
+                            errorMessage += `El archivo ${file.name} es demasiado grande. El máximo permitido es ${maxSizeMB}MB.<br>`;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    if (hasErrors) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la imagen',
+                                html: errorMessage
+                            });
+                        } else {
+                            alert(errorMessage.replace(/<br>/g, '\n'));
+                        }
                     }
+
+                    if (validFiles.length > 0) {
+                        if (!config.multiple) {
+                            selectedFiles = [validFiles[0]];
+                        } else {
+                            validFiles.forEach(file => {
+                                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                                    selectedFiles.push(file);
+                                }
+                            });
+                        }
+                    }
+                    
                     updateInputFiles();
                     renderPreviews();
                 }

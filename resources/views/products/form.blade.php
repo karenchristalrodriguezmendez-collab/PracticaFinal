@@ -83,6 +83,16 @@
                         if (!form.checkValidity()) {
                             event.preventDefault();
                             event.stopPropagation();
+                        } else {
+                            // Mostrar indicador de carga si el formulario es válido
+                            Swal.fire({
+                                title: 'Procesando...',
+                                html: 'Guardando producto e imágenes.<br><b>Por favor espera.</b>',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
                         }
 
                         form.classList.add('was-validated')

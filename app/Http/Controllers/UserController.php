@@ -171,9 +171,9 @@ class UserController extends Controller
         $filteredRecords = clone $query;
         $recordsFiltered = $filteredRecords->count();
 
-        $columns = ["name", "email", "created_at", "id"];
+        $columns = ["id", "name", "email", "created_at", "id"]; // Avatar (0), Name (1), Email (2), Created At (3), Actions (4)
         $orderColumn = $request->input("order.0.column", 0);
-        $orderDir = $request->input("order.0.dir", "asc");
+        $orderDir = $request->input("order.0.dir", "desc");
         $query->orderBy($columns[$orderColumn] ?? "id", $orderDir);
 
         $start = $request->input("start", 0);

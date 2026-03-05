@@ -45,6 +45,7 @@
                     url: '{{ route("companies.data") }}',
                     type: 'GET'
                 },
+                order: [[2, 'desc']],
                 columns: [
                     { data: 'name' },
                     { data: 'description' },

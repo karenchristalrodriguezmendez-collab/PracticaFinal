@@ -62,6 +62,7 @@
                 url: '{{ route("products.data") }}',
                 type: 'GET'
             },
+            order: [[0, 'desc']],
             columns: [
                 {
                     data: 'image',
@@ -100,9 +101,23 @@
         }
         // Obtener de la sessión el mensaje de éxito o error
         @if (session('success'))
-            alert (`{{ session('success') }}`);
-            // Opcional: Recarga la tabla después de agregar/eliminar
-            // $('#myTable').DataTable().ajax.reload(null, false); // false para no resetear paginación
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '{{ session('success') }}',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+                timer: 3000,
+                showConfirmButton: false
+            });
         @endif
     </script>
     @endsection

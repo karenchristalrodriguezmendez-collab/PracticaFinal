@@ -39,6 +39,7 @@
                     url: '{{ route("users.data") }}',
                     type: 'GET'
                 },
+                order: [[0, 'desc']],
                 columns: [
                     {
                         data: 'avatar',
