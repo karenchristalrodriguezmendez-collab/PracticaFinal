@@ -7,7 +7,7 @@
             <h2 class="fw-bold mb-0">Mis Pedidos</h2>
             <p class="text-muted small">Historial de tus compras en EcoSkin</p>
         </div>
-        <a href="{{ url('/') }}" class="btn btn-outline-brand-green rounded-pill px-4">Volver a la tienda</a>
+        <a href="{{ url('/home') }}" class="btn btn-outline-brand-green rounded-pill px-4">Volver a la tienda</a>
     </div>
 
     @if($orders->isEmpty())
@@ -16,7 +16,7 @@
                 <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
                 <h3 class="fw-bold">Aún no tienes pedidos</h3>
                 <p class="text-muted">Cuando realices tu primera compra, aparecerá aquí.</p>
-                <a href="{{ url('/') }}" class="btn btn-brand-green rounded-pill px-4 py-2 mt-2">Empezar a comprar</a>
+                <a href="{{ url('/home') }}" class="btn btn-brand-green rounded-pill px-4 py-2 mt-2">Empezar a comprar</a>
             </div>
         </div>
     @else

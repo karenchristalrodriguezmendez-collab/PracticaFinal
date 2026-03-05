@@ -133,7 +133,7 @@
 
                     <!-- Search Bar Center -->
                     <div class="col-12 col-md-5 order-3 order-md-2">
-                        <form action="{{ url('/') }}" method="GET">
+                        <form action="{{ Auth::check() ? route('home') : url('/') }}" method="GET">
                             <div class="input-group search-group rounded-pill overflow-hidden border">
                                 <span class="input-group-text bg-white border-0 ps-3">
                                     <i class="bi bi-search text-muted"></i>
@@ -151,6 +151,12 @@
                                 <a href="{{ route('login') }}" class="text-decoration-none text-dark d-flex flex-column align-items-center">
                                     <i class="bi bi-person fs-4"></i>
                                     <span class="small d-none d-lg-block">Iniciar sesión</span>
+                                </a>
+                            </div>
+                            <div class="text-center">
+                                <a href="{{ route('register') }}" class="text-decoration-none text-dark d-flex flex-column align-items-center">
+                                    <i class="bi bi-person-plus fs-4"></i>
+                                    <span class="small d-none d-lg-block">Registrarse</span>
                                 </a>
                             </div>
                         @else

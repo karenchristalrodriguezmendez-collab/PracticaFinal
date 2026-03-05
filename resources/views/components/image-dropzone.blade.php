@@ -20,8 +20,10 @@
     'name' => 'image',
     'id' => null,
     'currentImage' => null,
+    'currentImages' => [],
     'currentImageAlt' => '',
     'required' => false,
+    'multiple' => false,
     'maxSize' => 5,
     'accept' => 'image/*',
     'allowedTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp'],
@@ -52,19 +54,34 @@
 @endphp
 
 {{-- <div class="" data-image-dropzone-component="{{ $componentId }}"> --}}
-    <!-- Mostrar imagen actual si existe -->
-    @if($showCurrentImage && $currentImage)
-        <div class="{{ $currentimageclass }} ">
+    <!-- Mostrar imágenes actuales si existen -->
+    @if($showCurrentImage && ($currentImage || !empty($currentImages)))
+        <div class="{{ $currentimageclass }} mb-3">
             <label class="form-label text-muted mb-2">
-                <i class="bi bi-image-fill text-primary me-2"></i>Imagen actual:
+                <i class="bi bi-image-fill text-primary me-2"></i>Imágenes actuales:
             </label>
-            <div class="card border-0 shadow-sm mx-auto" style="max-width: 200px;">
-                <img src="{{ $currentImage }}"
-                     alt="{{ $currentImageAlt }}"
-                     class="img-fluid rounded shadow-sm"
-                     style="max-height: 200px; object-fit: cover;">
-                {{-- <div class="card-body p-3 text-center">
-                </div> --}}
+            <div class="d-flex flex-wrap gap-2">
+                @if($currentImage && empty($currentImages))
+                    <div class="card border-0 shadow-sm position-relative overflow-hidden" style="width: 100px; height: 100px;">
+                        <img src="{{ $currentImage }}"
+                             alt="{{ $currentImageAlt }}"
+                             class="w-100 h-100 object-fit-cover rounded">
+                    </div>
+                @endif
+
+                @foreach($currentImages as $img)
+                    <div class="card border-0 shadow-sm position-relative overflow-hidden" style="width: 100px; height: 100px;">
+                        <img src="{{ asset('storage/' . $img->image_path) }}"
+                             alt="Imagen de producto"
+                             class="w-100 h-100 object-fit-cover rounded">
+                        <div class="position-absolute top-0 end-0 p-1">
+                            <button type="button" class="btn btn-danger btn-xs rounded-circle p-1 leading-none delete-existing-img"
+                                    data-id="{{ $img->id }}" style="width: 20px; height: 20px; font-size: 10px;">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     @endif
@@ -75,54 +92,38 @@
              class="border border-2 border-dashed border-secondary rounded-3 p-4 text-center bg-light position-relative image-dropzone {{ $error ? 'border-danger' : '' }}"
              style="min-height: {{ $dropzoneHeight }}; cursor: pointer; transition: all 0.3s ease;">
 
-            <!-- Contenido inicial del dropzone -->
             <div id="{{ $contentId }}" class="d-flex flex-column align-items-center justify-content-center h-100 dropzone-content">
                 <div class="mb-3">
                     <i class="bi bi-cloud-upload display-1 text-primary dropzone-icon"></i>
                 </div>
                 <h5 class="text-primary fw-bold mb-2">{{ $title }}</h5>
                 <p class="text-muted mb-2">{{ $subtitle }}</p>
-                <small class="text-muted">{{ $helpText }} (máx. {{ $maxSize }}MB)</small>
+                <small class="text-muted">{{ $helpText }} (máx. {{ $maxSize }}MB por imagen)</small>
             </div>
 
-            <!-- Vista previa de la imagen -->
-            <div id="{{ $previewId }}"
-                 class="position-absolute top-0 start-0 w-100 h-100 d-none d-flex align-items-center justify-content-center bg-white rounded-3 image-preview">
-                <img id="{{ $previewImageId }}"
-                     src=""
-                     alt="Vista previa"
-                     class="img-fluid rounded shadow-sm"
-                     style="max-height: calc({{ $dropzoneHeight }} - 40px);">
-
-                <!-- Botones overlay -->
-                <div class="position-absolute top-0 end-0 p-2 opacity-0 preview-overlay"
-                     id="{{ $overlayId }}"
-                     style="transition: opacity 0.3s ease;">
-                    <div class="btn-group-vertical">
-                        <button type="button"
-                                id="{{ $removeBtnId }}"
-                                class="btn btn-danger btn-sm mb-1"
-                                title="Eliminar imagen">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                        <button type="button"
-                                id="{{ $changeBtnId }}"
-                                class="btn btn-primary btn-sm"
-                                title="Cambiar imagen">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                    </div>
-                </div>
+            <!-- Contenedor para múltiples vistas previas -->
+            <div id="{{ $previewId }}" class="d-none d-flex flex-wrap gap-3 justify-content-center w-100 h-100">
+                <!-- Se llenará vía JS -->
             </div>
+        </div>
+
+        <div class="mt-2 d-none" id="{{ $componentId }}_actions">
+            <button type="button" id="{{ $removeBtnId }}" class="btn btn-danger btn-sm rounded-pill px-3">
+                <i class="bi bi-trash-fill me-1"></i> Eliminar todas
+            </button>
+            <button type="button" id="{{ $changeBtnId }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 ms-2">
+                <i class="bi bi-plus-circle-fill me-1"></i> Agregar más
+            </button>
         </div>
 
         <!-- Input file oculto -->
         <input type="file"
                id="{{ $inputId }}"
-               name="{{ $name }}"
+               name="{{ $name }}{{ $multiple ? '[]' : '' }}"
                accept="{{ $accept }}"
                class="d-none"
                {{ $required ? 'required' : '' }}
+               {{ $multiple ? 'multiple' : '' }}
                {{ $attributes }}>
 
         <!-- Mensaje de error -->
@@ -155,189 +156,126 @@
     @push('scripts')
         <script>
             $(document).ready(function() {
-                console.log('Initializing image dropzone: {{ $componentId }}');
-
-                // Elementos del DOM específicos de este componente
-                const $component = $('[data-image-dropzone-component="{{ $componentId }}"]');
                 const $dropzone = $('#{{ $dropzoneId }}');
                 const $imageInput = $('#{{ $inputId }}');
                 const $dropzoneContent = $('#{{ $contentId }}');
-                const $imagePreview = $('#{{ $previewId }}');
-                const $previewImage = $('#{{ $previewImageId }}');
-                const $previewOverlay = $('#{{ $overlayId }}');
+                const $imagePreviewArea = $('#{{ $previewId }}');
                 const $removeImageBtn = $('#{{ $removeBtnId }}');
                 const $changeImageBtn = $('#{{ $changeBtnId }}');
+                const $actions = $('#{{ $componentId }}_actions');
 
-                // Configuración
+                let selectedFiles = [];
+
                 const config = {
                     allowedTypes: {!! json_encode($allowedTypesArray) !!},
                     maxSize: {{ $maxSizeBytes }},
-                    maxSizeText: '{{ $maxSize }}MB'
+                    multiple: {{ $multiple ? 'true' : 'false' }}
                 };
 
-                // Verificar que existan los elementos
-                if ($dropzone.length === 0 || $imageInput.length === 0) {
-                    console.error('Required elements not found for component: {{ $componentId }}');
-                    return;
-                }
-
-                console.log('Component {{ $componentId }} initialized successfully');
-
-                // Click en dropzone para abrir selector
                 $dropzone.on('click', function(e) {
                     if (!$(e.target).closest('button').length) {
-                        console.log('Dropzone clicked, opening file selector...');
                         $imageInput.click();
                     }
                 });
 
-                // Cambio en el input file
                 $imageInput.on('change', function(e) {
-                    console.log('File input changed');
-                    const file = e.target.files[0];
-                    if (file) {
-                        console.log('File selected:', {
-                            name: file.name,
-                            size: file.size,
-                            type: file.type
-                        });
-                        showPreview(file);
-                    }
+                    processFiles(e.target.files);
                 });
 
-                // Eventos drag & drop
                 $dropzone.on('dragover', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
                     $(this).addClass('dragover');
+                }).on('dragleave', function(e) {
+                    e.preventDefault();
+                    $(this).removeClass('dragover');
+                }).on('drop', function(e) {
+                    e.preventDefault();
+                    $(this).removeClass('dragover');
+                    processFiles(e.originalEvent.dataTransfer.files);
                 });
 
-                $dropzone.on('dragleave', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    $(this).removeClass('dragover');
-                });
-
-                $dropzone.on('drop', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    $(this).removeClass('dragover');
-
-                    const files = e.originalEvent.dataTransfer.files;
-                    if (files.length > 0) {
-                        console.log('File dropped:', files[0].name);
-                        // Asignar archivo al input
-                        try {
-                            const dt = new DataTransfer();
-                            dt.items.add(files[0]);
-                            $imageInput[0].files = dt.files;
-                            showPreview(files[0]);
-                        } catch (error) {
-                            console.error('Error setting dropped file:', error);
-                            showPreview(files[0]);
-                        }
+                function processFiles(files) {
+                    if (!config.multiple) {
+                        selectedFiles = [files[0]];
+                    } else {
+                        Array.from(files).forEach(file => {
+                            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                                selectedFiles.push(file);
+                            }
+                        });
                     }
-                });
+                    updateInputFiles();
+                    renderPreviews();
+                }
 
-                // Mostrar overlay al hover en la preview
-                $imagePreview.on('mouseenter', function() {
-                    $previewOverlay.removeClass('opacity-0').addClass('opacity-100');
-                }).on('mouseleave', function() {
-                    $previewOverlay.removeClass('opacity-100').addClass('opacity-0');
-                });
+                function updateInputFiles() {
+                    const dt = new DataTransfer();
+                    selectedFiles.forEach(file => dt.items.add(file));
+                    $imageInput[0].files = dt.files;
+                }
 
-                // Botón eliminar imagen
-                $removeImageBtn.on('click', function(e) {
+                function renderPreviews() {
+                    $imagePreviewArea.empty();
+                    if (selectedFiles.length === 0) {
+                        $imagePreviewArea.addClass('d-none');
+                        $dropzoneContent.show();
+                        $actions.addClass('d-none');
+                        return;
+                    }
+
+                    $dropzoneContent.hide();
+                    $imagePreviewArea.removeClass('d-none');
+                    $actions.removeClass('d-none');
+
+                    selectedFiles.forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const html = `
+                                <div class="position-relative" style="width: 120px; height: 120px;">
+                                    <img src="${e.target.result}" class="w-100 h-100 object-fit-cover rounded border shadow-sm">
+                                    <button type="button" class="btn btn-danger btn-xs rounded-circle position-absolute top-0 end-0 m-n1 remove-preview"
+                                            data-index="${index}" style="width: 22px; height: 22px; padding: 0;">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            `;
+                            $imagePreviewArea.append(html);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                $(document).on('click', '.remove-preview', function(e) {
                     e.stopPropagation();
-                    removeImage();
+                    const index = $(this).data('index');
+                    selectedFiles.splice(index, 1);
+                    updateInputFiles();
+                    renderPreviews();
                 });
 
-                // Botón cambiar imagen
-                $changeImageBtn.on('click', function(e) {
-                    e.stopPropagation();
+                $removeImageBtn.on('click', function() {
+                    selectedFiles = [];
+                    updateInputFiles();
+                    renderPreviews();
+                });
+
+                $changeImageBtn.on('click', function() {
                     $imageInput.click();
                 });
 
-                // Función para mostrar vista previa
-                function showPreview(file) {
-                    console.log('Showing preview for:', file.name);
-
-                    // Validación de tipo
-                    if (!config.allowedTypes.includes(file.type)) {
-                        alert('Por favor selecciona una imagen válida. Tipos permitidos: ' +
-                              config.allowedTypes.map(type => type.replace('image/', '')).join(', '));
-                        removeImage();
-                        return;
+                $('.delete-existing-img').on('click', function() {
+                    const id = $(this).data('id');
+                    const $card = $(this).closest('.card');
+                    if (confirm('¿Desea eliminar esta imagen permanentemente?')) {
+                        // Aquí podrías agregar un campo oculto para marcar como eliminada
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'deleted_images[]',
+                            value: id
+                        }).appendTo($card.closest('form'));
+                        $card.parent().fadeOut();
                     }
-
-                    // Validación de tamaño
-                    if (file.size > config.maxSize) {
-                        alert('La imagen no debe superar los ' + config.maxSizeText);
-                        removeImage();
-                        return;
-                    }
-
-                    // Mostrar vista previa
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        console.log('Preview loaded successfully for component: {{ $componentId }}');
-                        $previewImage.attr('src', e.target.result);
-                        $dropzoneContent.hide();
-                        $imagePreview.removeClass('d-none');
-                        $dropzone.removeClass('border-danger');
-                    };
-                    reader.onerror = function() {
-                        console.error('Error reading file');
-                        alert('Error al leer el archivo');
-                        removeImage();
-                    };
-                    reader.readAsDataURL(file);
-                }
-
-                // Función para remover imagen
-                function removeImage() {
-                    console.log('Removing image from component: {{ $componentId }}');
-                    $imageInput.val('');
-                    $previewImage.attr('src', '');
-                    $dropzoneContent.show();
-                    $imagePreview.addClass('d-none');
-                    $previewOverlay.removeClass('opacity-100').addClass('opacity-0');
-                }
-
-                // Exponer funciones públicas para el componente
-                window['imageDropzone_{{ $componentId }}'] = {
-                    removeImage: removeImage,
-                    showPreview: showPreview,
-                    getFile: function() {
-                        return $imageInput[0].files[0] || null;
-                    },
-                    setRequired: function(required) {
-                        if (required) {
-                            $imageInput.attr('required', 'required');
-                        } else {
-                            $imageInput.removeAttr('required');
-                        }
-                    },
-                    validate: function() {
-                        const file = $imageInput[0].files[0];
-                        if (!file) {
-                            return !$imageInput.is('[required]');
-                        }
-
-                        if (!config.allowedTypes.includes(file.type)) {
-                            return false;
-                        }
-
-                        if (file.size > config.maxSize) {
-                            return false;
-                        }
-
-                        return true;
-                    },
-                    getConfig: function() {
-                        return config;
-                    }
-                };
+                });
             });
         </script>
     @endpush

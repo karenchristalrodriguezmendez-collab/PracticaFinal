@@ -166,7 +166,7 @@
                         </div>
 
                         <button id="show-payment" class="btn text-white w-100 py-2 rounded-pill mb-2" style="background-color: #58624A;">Proceder al pago</button>
-                        <a href="{{ url('/') }}" class="btn btn-outline-secondary w-100 py-2 rounded-pill">Seguir comprando</a>
+                        <a href="{{ url('/home') }}" class="btn btn-outline-secondary w-100 py-2 rounded-pill">Seguir comprando</a>
                     </div>
                 </div>
             </div>

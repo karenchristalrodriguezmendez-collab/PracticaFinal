@@ -17,6 +17,11 @@ class Product extends Model
      */
     protected $fillable = ["name", "description", "price", "image"];
 
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -31,12 +36,19 @@ class Product extends Model
     }
 
     /**
-     * Get the image URL attribute
+     * Get the image URL attribute (Primary image)
      *
      * @return string|null
      */
     public function getImageUrlAttribute(): ?string
     {
+        // Try to get primary image from relationship first
+        $primaryImage = $this->images()->where('is_primary', true)->first() ?? $this->images()->first();
+        if ($primaryImage) {
+            return $primaryImage->url;
+        }
+
+        // Fallback to legacy image column
         if ($this->image) {
             return asset("storage/" . $this->image);
         }
@@ -50,6 +62,10 @@ class Product extends Model
      */
     public function hasImage(): bool
     {
+        if ($this->images()->exists()) {
+            return true;
+        }
+
         return !empty($this->image) &&
             Storage::disk("public")->exists($this->image);
     }

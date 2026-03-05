@@ -76,8 +76,10 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     Route::get('/cart/success', [App\Http\Controllers\CartController::class, 'success'])->name('cart.success');
 
     // Rutas de productos
+    Route::get("products/data", [ProductController::class, "dataTable"])->name(
+        "products.data",
+    );
     Route::resource("products", ProductController::class)->except([
-        "show",
         "update",
     ]);
     Route::get("productos", [ProductController::class, "index"])->name(
@@ -85,9 +87,6 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     );
     Route::get("productos/agregar", [ProductController::class, "create"])->name(
         "productos.create",
-    );
-    Route::get("products/data", [ProductController::class, "dataTable"])->name(
-        "products.data",
     );
     Route::get("products/{product}/download-image", [
         ProductController::class,
