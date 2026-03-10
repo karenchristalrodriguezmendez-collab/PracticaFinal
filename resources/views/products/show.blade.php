@@ -1,3 +1,5 @@
+@extends('layouts.app')
+
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <style>
@@ -127,6 +129,61 @@
                 nextEl: '.swiper-button-next',
                 prevEl: '.swiper-button-prev',
             },
+        });
+
+        // AJAX Add to Cart logic
+        $('.add-to-cart-form').on('submit', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const url = form.attr('action');
+            const data = form.serialize();
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: data,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Update badge
+                        let badge = $('#cart-badge');
+                        if (badge.length === 0) {
+                            $('.bi-cart3').parent().append('<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-badge">' + response.cart_count + '</span>');
+                        } else {
+                            badge.text(response.cart_count);
+                        }
+                        
+                        // Visual feedback
+                        const btn = form.find('button[type="submit"]');
+                        const originalHtml = btn.html();
+                        
+                        btn.html('<i class="bi bi-check-lg"></i> Añadido')
+                           .addClass('btn-success').removeClass('btn-brand-green');
+
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Añadido al carrito!',
+                                text: 'El producto se ha añadido correctamente.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+
+                        setTimeout(() => {
+                            btn.html(originalHtml)
+                               .addClass('btn-brand-green').removeClass('btn-success');
+                        }, 2000);
+                    }
+                },
+                error: function(xhr) {
+                    if(xhr.status === 401) {
+                        window.location.href = '/login';
+                    } else {
+                        alert('Ocurrió un error al añadir el producto.');
+                    }
+                }
+            });
         });
     });
 </script>

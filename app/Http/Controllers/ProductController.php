@@ -63,12 +63,16 @@ class ProductController extends Controller
                 'description.required' => 'La descripción es obligatoria.',
             ]);
 
+            $productData = $validated;
+            unset($productData['image']);
+            unset($productData['deleted_images']);
+
             if ($id) {
                 $product = Product::findOrFail($id);
-                $product->update($validated);
+                $product->update($productData);
                 $message = "Producto actualizado exitosamente.";
             } else {
-                $product = Product::create($validated);
+                $product = Product::create($productData);
                 $message = "Producto guardado exitosamente.";
             }
 
@@ -134,11 +138,15 @@ class ProductController extends Controller
                 'description.required' => 'La descripción es obligatoria.',
             ]);
 
-            $product->update($validated);
+            $productData = $validated;
+            unset($productData['image']);
+            unset($productData['deleted_images']);
+
+            $product->update($productData);
 
             // Eliminar imágenes marcadas
             if ($request->has("deleted_images")) {
-                foreach ($request->deleted_images as $imageId) {
+                foreach ($request->input("deleted_images") as $imageId) {
                     $img = ProductImage::find($imageId);
                     if ($img && $img->product_id === $product->id) {
                         $this->fileService->delete($img->image_path);
@@ -215,103 +223,113 @@ class ProductController extends Controller
 
     public function dataTable(Request $request)
     {
-        // Validar params de DataTables (opcional, pero seguro)
-        $request->validate([
-            "draw" => "integer",
-            "start" => "integer|min:0",
-            "length" => "integer|min:1|max:100",
-            "search.value" => "nullable|string|max:255",
-        ]);
+        try {
+            // Validar params de DataTables
+            $request->validate([
+                "draw" => "integer",
+                "start" => "integer|min:0",
+                "length" => "integer|min:1|max:100",
+                "search.value" => "nullable|string|max:255",
+            ]);
 
-        // Query base
-        $query = Product::query();
+            // Query base con eager loading para evitar N+1
+            $query = Product::with('images');
 
-        // Búsqueda en varios campos
-        $search = $request->input("search.value");
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where("name", "like", "%{$search}%")
-                    ->orWhere("description", "like", "%{$search}%")
-                    ->orWhere("price", "like", "%{$search}%");
-            });
-        }
-
-        // Total de registros sin filtros (para recordsTotal)
-        $totalRecords = Product::count();
-
-        // Registros filtrados (recordsFiltered)
-        $filteredRecords = clone $query;
-        $recordsFiltered = $filteredRecords->count();
-
-        // get y set Ordenación (columna y dirección)
-        $columns = ["id", "name", "description", "price", "id"]; // Orden de columnas en tabla: Imagen (0), Name (1), Description (2), Price (3), Actions (4)
-        $orderColumn = $request->input("order.0.column", 0);
-        $orderDir = $request->input("order.0.dir", "desc");
-        $query->orderBy($columns[$orderColumn] ?? "id", $orderDir);
-
-        // Paginación
-        $start = $request->input("start", 0);
-        $length = $request->input("length", 10);
-        $data = $query->skip($start)->take($length)->get();
-
-        // Formatear los datos para el componente DataTables
-        // TODO: Formatear del lado del cliente
-        $data = $data->map(function ($product) {
-            $imageHtml = "";
-            $primaryImage = $product->images()->where('is_primary', true)->first() ?? $product->images()->first();
-            
-            if ($primaryImage && Storage::disk("public")->exists($primaryImage->image_path)) {
-                $imageHtml =
-                    '<img src="' .
-                    asset("storage/" . $primaryImage->image_path) .
-                    '" alt="' .
-                    $product->name .
-                    '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">';
-            } elseif (
-                $product->image &&
-                Storage::disk("public")->exists($product->image)
-            ) {
-                $imageHtml =
-                    '<img src="' .
-                    asset("storage/" . $product->image) .
-                    '" alt="' .
-                    $product->name .
-                    '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">';
-            } else {
-                $imageHtml =
-                    '<div class="bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 4px;"><i class="bi bi-image text-muted"></i></div>';
+            // Búsqueda en varios campos
+            $search = $request->input("search.value");
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where("name", "like", "%{$search}%")
+                        ->orWhere("description", "like", "%{$search}%")
+                        ->orWhere("price", "like", "%{$search}%");
+                });
             }
 
-            return [
-                "image" => $imageHtml,
-                "name" => $product->name,
-                "description" => $product->description,
-                "price" => '$' . number_format($product->price, 2),
-                "actions" =>
-                    '
-                    <div class="d-flex gap-1">
-                        <button class="btn btn-primary btn-sm" onclick="execute(\'/products/' .
-                    $product->id .
-                    '/edit\')">
-                            <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRecord(\'/products/' .
-                    $product->id .
-                    '\')">
-                            <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Delete</span>
-                        </button>
-                    </div>
-                ',
-            ];
-        });
+            // Total de registros sin filtros (para recordsTotal)
+            $totalRecords = Product::count();
 
-        // Respuesta JSON en formato requerido por DataTables
-        return response()->json([
-            "draw" => (int) $request->input("draw"), // Eco del draw para sync
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $recordsFiltered,
-            "data" => $data,
-        ]);
+            // Total de registros filtrados (recordsFiltered)
+            $recordsFiltered = $query->count();
+
+            // Ordenación
+            $columns = ["id", "name", "description", "price", "id"];
+            $orderColumn = $request->input("order.0.column", 0);
+            $orderDir = $request->input("order.0.dir", "desc");
+            $query->orderBy($columns[$orderColumn] ?? "id", $orderDir);
+
+            // Paginación
+            $start = $request->input("start", 0);
+            $length = $request->input("length", 10);
+            $products = $query->offset($start)->limit($length)->get();
+
+            // Formatear los datos
+            $data = $products->map(function ($product) {
+                $imageHtml = "";
+                // Usar la relación ya cargada ansiosamente
+                $primaryImage = $product->images->where('is_primary', true)->first() ?? $product->images->first();
+                
+                if ($primaryImage && Storage::disk("public")->exists($primaryImage->image_path)) {
+                    $imageHtml =
+                        '<img src="' .
+                        asset("storage/" . $primaryImage->image_path) .
+                        '" alt="' .
+                        $product->name .
+                        '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">';
+                } elseif (
+                    $product->image &&
+                    Storage::disk("public")->exists($product->image)
+                ) {
+                    $imageHtml =
+                        '<img src="' .
+                        asset("storage/" . $product->image) .
+                        '" alt="' .
+                        $product->name .
+                        '" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">';
+                } else {
+                    $imageHtml =
+                        '<div class="bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 4px;"><i class="bi bi-image text-muted"></i></div>';
+                }
+
+                return [
+                    "image" => $imageHtml,
+                    "name" => $product->name,
+                    "description" => $product->description,
+                    "price" => '$' . number_format($product->price, 2),
+                    "actions" =>
+                        '
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-primary btn-sm" onclick="execute(\'/products/' .
+                        $product->id .
+                        '/edit\')">
+                                <i class="bi bi-pencil"></i> <span class="d-none d-sm-inline">Edit</span>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteRecord(\'/products/' .
+                        $product->id .
+                        '\')">
+                                <i class="bi bi-trash"></i> <span class="d-none d-sm-inline">Delete</span>
+                            </button>
+                        </div>
+                    ',
+                ];
+            });
+
+            // Respuesta JSON en formato requerido por DataTables
+            return response()->json([
+                "draw" => (int) $request->input("draw"),
+                "recordsTotal" => $totalRecords,
+                "recordsFiltered" => $recordsFiltered,
+                "data" => $data,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error en ProductController@dataTable: " . $e->getMessage());
+            return response()->json([
+                "draw" => (int) $request->input("draw", 0),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+                "error" => "Error interno al cargar los datos: " . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

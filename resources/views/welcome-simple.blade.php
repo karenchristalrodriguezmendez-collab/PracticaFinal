@@ -116,7 +116,7 @@
                             </div>
                         </div>
                         <div class="card-footer-buttons d-flex gap-2">
-                            <a href="{{ route('products.show', $product) }}" target="_blank" class="btn btn-outline-brand-green btn-sm rounded-pill flex-grow-1 fw-bold py-2">
+                            <a href="{{ route('products.show', $product) }}" class="btn btn-outline-brand-green btn-sm rounded-pill flex-grow-1 fw-bold py-2">
                                 <i class="bi bi-eye"></i> Detalles
                             </a>
                             @auth
