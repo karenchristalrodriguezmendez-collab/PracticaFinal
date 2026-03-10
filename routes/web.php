@@ -82,15 +82,13 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     Route::get("products/data", [ProductController::class, "dataTable"])->name(
         "products.data",
     );
-    Route::resource("products", ProductController::class)->except([
-        "update", "show"
-    ]);
-    Route::get("productos", [ProductController::class, "index"])->name(
-        "productos.index",
-    );
-    Route::get("productos/agregar", [ProductController::class, "create"])->name(
-        "productos.create",
-    );
+    // Rutas de productos
+    Route::resource("products", ProductController::class);
+    
+    // Redirección para compatibilidad con rutas antiguas
+    Route::get("productos", function() { return redirect()->route('products.index'); });
+    Route::get("productos/agregar", function() { return redirect()->route('products.create'); });
+
     Route::get("products/{product}/download-image", [
         ProductController::class,
         "downloadImage",

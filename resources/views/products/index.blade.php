@@ -10,7 +10,7 @@
         <div class="row my-4 mx-1">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="mb-0">Productos</h1>
-                <button class="btn btn-primary btn-sm" onclick="execute('/productos/agregar')">
+                <button class="btn btn-primary btn-sm" onclick="execute('{{ route('products.create') }}')">
                     <i class="bi bi-plus"></i>
                     <span class="d-none d-sm-inline">Agregar</span>
                 </button>
