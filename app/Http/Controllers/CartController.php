@@ -173,7 +173,8 @@ class CartController extends Controller
             'paymentMethod' => $paymentMethod,
             'orderNumber' => $orderNumber,
             'items' => $itemsData,
-            'reference' => $order->reference
+            'reference' => $order->reference,
+            'order_id' => $order->id
         ]);
 
         return redirect()->route('cart.success');

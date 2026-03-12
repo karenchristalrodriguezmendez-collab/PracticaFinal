@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\PrintController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderAdminController;
@@ -25,7 +26,7 @@ Route::get("/", function (Request $request) {
               ->orWhere("description", "like", "%{$search}%");
     }
 
-    $products = $query->latest()->paginate(8);
+    $products = $query->with('images')->latest()->paginate(8);
     return view("welcome-simple", compact("products", "search"));
 });
 
@@ -121,5 +122,6 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     // Pedidos del Usuario (Historial)
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/print-direct', [PrintController::class, 'printTicket'])->name('orders.print-direct');
 
 });

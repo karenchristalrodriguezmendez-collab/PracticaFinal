@@ -62,7 +62,7 @@
                 url: '{{ route("products.data") }}',
                 type: 'GET'
             },
-            order: [[0, 'desc']],
+            order: [[1, 'asc']],
             columns: [
                 {
                     data: 'image',

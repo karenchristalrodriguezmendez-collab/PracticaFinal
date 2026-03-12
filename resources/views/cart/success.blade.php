@@ -107,13 +107,20 @@
                             </div>
                         @endif
 
-                        <div class="mt-5 d-flex gap-2">
-                            <a href="{{ route('home') }}" class="btn text-white w-100 py-3 rounded-pill fw-bold" style="background-color: #58624A;">
+                        <div class="mt-5 d-flex flex-column gap-2">
+                            <div class="d-flex gap-2">
+                                @if(isset(session('last_order')['order_id']))
+                                    <button onclick="printDirectly({{ session('last_order')['order_id'] }})" id="btn-direct-print" class="btn text-white w-100 py-3 rounded-pill fw-bold" style="background-color: #BA9B72;">
+                                        <i class="bi bi-printer-fill me-2"></i> Impresión Térmica Directa
+                                    </button>
+                                @endif
+                                <button onclick="window.print()" class="btn btn-outline-secondary w-100 py-3 rounded-pill fw-bold">
+                                    <i class="bi bi-window me-2"></i> Vista Previa (PDF)
+                                </button>
+                            </div>
+                            <a href="{{ route('home') }}" class="btn text-white w-100 py-3 rounded-pill fw-bold btn-brand-green">
                                 Volver al Inicio
                             </a>
-                            <button onclick="window.print()" class="btn btn-outline-secondary w-100 py-3 rounded-pill fw-bold">
-                                <i class="bi bi-printer me-2"></i> Imprimir
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -122,12 +129,47 @@
     </div>
 </div>
 
+<x-ticket :order="['total' => $total, 'orderNumber' => $orderNumber, 'paymentMethod' => $paymentMethod, 'reference' => $reference ?? null]" :items="$items" />
+
 <script>
     function copyClabe() {
         const clabeInput = document.querySelector('input[readonly]');
         clabeInput.select();
         document.execCommand('copy');
         alert('CLABE copiada al portapapeles');
+    }
+
+    function printDirectly(orderId) {
+        const btn = document.getElementById('btn-direct-print');
+        const originalHtml = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Imprimiendo...';
+
+        fetch(`/orders/${orderId}/print-direct`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert('Ticket enviado correctamente a la impresora.');
+            } else {
+                alert('Error al imprimir: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error de conexión con la impresora.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        });
     }
 </script>
 

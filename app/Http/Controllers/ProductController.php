@@ -248,18 +248,18 @@ class ProductController extends Controller
             // Total de registros sin filtros (para recordsTotal)
             $totalRecords = Product::count();
 
-            // Total de registros filtrados (recordsFiltered)
-            $recordsFiltered = $query->count();
+            // Total de registros filtrados (con clones para no ensuciar la query original)
+            $recordsFiltered = (clone $query)->count();
 
             // Ordenación
             $columns = ["id", "name", "description", "price", "id"];
-            $orderColumn = $request->input("order.0.column", 0);
+            $orderColumn = (int) $request->input("order.0.column", 0);
             $orderDir = $request->input("order.0.dir", "desc");
             $query->orderBy($columns[$orderColumn] ?? "id", $orderDir);
 
             // Paginación
-            $start = $request->input("start", 0);
-            $length = $request->input("length", 10);
+            $start = (int) $request->input("start", 0);
+            $length = (int) $request->input("length", 10);
             $products = $query->offset($start)->limit($length)->get();
 
             // Formatear los datos
@@ -320,14 +320,17 @@ class ProductController extends Controller
                 "recordsFiltered" => $recordsFiltered,
                 "data" => $data,
             ]);
-        } catch (\Exception $e) {
-            Log::error("Error en ProductController@dataTable: " . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error("Error en ProductController@dataTable: " . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 "draw" => (int) $request->input("draw", 0),
                 "recordsTotal" => 0,
                 "recordsFiltered" => 0,
                 "data" => [],
-                "error" => "Error interno al cargar los datos: " . $e->getMessage()
+                "error" => "Error interno detectado: " . $e->getMessage()
             ], 500);
         }
     }

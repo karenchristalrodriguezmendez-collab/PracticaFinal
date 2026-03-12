@@ -111,7 +111,6 @@
 </head>
 <body>
     <div id="app">
-    <div id="app">
         <!-- Top Bar -->
         <div class="top-bar text-white py-1 text-center" style="background-color: #58624A; font-size: 0.85rem;">
             <div class="container d-flex justify-content-between">

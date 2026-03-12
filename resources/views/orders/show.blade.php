@@ -9,9 +9,17 @@
                     <h2 class="fw-bold mb-0">Detalles del Pedido</h2>
                     <p class="text-muted small">Pedido #{{ $order->order_number }}</p>
                 </div>
-                <a href="{{ route('orders.index') }}" class="btn btn-outline-brand-green rounded-pill px-4">
-                    <i class="bi bi-arrow-left me-2"></i>Volver a mis pedidos
-                </a>
+                <div class="d-flex gap-2">
+                    <button onclick="printDirectly({{ $order->id }})" id="btn-direct-print" class="btn btn-brand-gold text-white rounded-pill px-4">
+                        <i class="bi bi-printer-fill me-2"></i>Imprimir Directo (58mm)
+                    </button>
+                    <button onclick="window.print()" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-receipt-cutoff me-2"></i>Vista Previa
+                    </button>
+                    <a href="{{ route('orders.index') }}" class="btn btn-outline-brand-green rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Volver a mis pedidos
+                    </a>
+                </div>
             </div>
 
             <div class="row g-4">
@@ -143,7 +151,41 @@
                     @endif
                 </div>
             </div>
-        </div>
-    </div>
 </div>
+<x-ticket :order="$order" />
+
+<script>
+    function printDirectly(orderId) {
+        const btn = document.getElementById('btn-direct-print');
+        const originalHtml = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Imprimiendo...';
+
+        fetch(`/orders/${orderId}/print-direct`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert('Ticket enviado correctamente a la impresora.');
+            } else {
+                alert('Error al imprimir: ' + data.message + '\n\nVerifica que la impresora se llame "' + '{{ config("printing.printer_name") }}' + '" y esté compartida.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error de conexión con el servidor de impresión.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        });
+    }
+</script>
 @endsection

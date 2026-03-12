@@ -135,8 +135,11 @@
                             Actualizar Pedido
                         </button>
                     </form>
-                    <button class="btn btn-outline-secondary w-100 rounded-pill py-2" onclick="window.print()">
+                    <button class="btn btn-outline-secondary w-100 rounded-pill py-2 mb-2" onclick="window.print()">
                         <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                    </button>
+                    <button class="btn btn-secondary w-100 rounded-pill py-2" onclick="window.print()">
+                        <i class="bi bi-receipt-cutoff me-1"></i> Imprimir Ticket (EC-PM-80330)
                     </button>
                 </div>
             </div>
@@ -144,3 +147,5 @@
     </div>
 </div>
 @endsection
+
+<x-ticket :order="$order" />

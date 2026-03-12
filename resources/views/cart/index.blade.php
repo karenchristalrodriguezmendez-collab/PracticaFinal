@@ -24,7 +24,7 @@
                 <i class="bi bi-cart-x fs-1 text-muted"></i>
                 <h2 class="mt-3">Tu carrito está vacío</h2>
                 <p class="text-muted">Parece que aún no has añadido ningún producto.</p>
-                <a href="{{ url('/') }}" class="btn text-white mt-3 px-4 rounded-pill" style="background-color: #58624A;">Ir a la tienda</a>
+                <a href="{{ route('home') }}" class="btn text-white mt-3 px-4 rounded-pill" style="background-color: #58624A;">Ir a la tienda</a>
             </div>
         </div>
     @else
@@ -173,7 +173,7 @@
                         </div>
 
                         <button id="show-payment" class="btn text-white w-100 py-2 rounded-pill mb-2" style="background-color: #58624A;">Proceder al pago</button>
-                        <a href="{{ url('/home') }}" class="btn btn-outline-secondary w-100 py-2 rounded-pill">Seguir comprando</a>
+                        <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 py-2 rounded-pill">Seguir comprando</a>
                     </div>
                 </div>
             </div>
