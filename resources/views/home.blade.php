@@ -89,7 +89,7 @@
                     <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
                     <h3 class="fw-bold">No encontramos productos</h3>
                     <p class="text-muted">Intenta con otros términos de búsqueda o explora nuestras categorías.</p>
-                    <a href="{{ route('home') }}" class="btn btn-brand-green rounded-pill px-4 py-2 mt-2">Ver todo el catálogo</a>
+                    <a href="{{ route('products.index') }}" class="btn btn-brand-green rounded-pill px-4 py-2 mt-2">Ver todo el catálogo</a>
                 </div>
             </div>
         @endif

@@ -32,7 +32,7 @@ class HomeController extends Controller
                   ->orWhere("description", "like", "%{$search}%");
         }
 
-        $products = $query->latest()->paginate(8);
+        $products = $query->with('images')->latest()->paginate(8);
         return view("home", compact("products", "search"));
     }
 }

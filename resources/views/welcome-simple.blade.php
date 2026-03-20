@@ -67,7 +67,7 @@
                 <h3 class="fw-bold mb-0">Nuestros Productos</h3>
                 <p class="text-muted small mb-0">Selección recomendada para ti</p>
             </div>
-            <a href="#" class="text-brand-green fw-bold text-decoration-none small">Ver todos los productos <i class="bi bi-arrow-right"></i></a>
+            <a href="{{ route('products.index') }}" class="text-brand-green fw-bold text-decoration-none small">Ver todos los productos <i class="bi bi-arrow-right"></i></a>
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">

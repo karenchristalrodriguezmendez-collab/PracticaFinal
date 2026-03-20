@@ -177,6 +177,9 @@
                                         <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+                                    <a class="dropdown-item py-2" href="#">
+                                        <i class="bi bi-person-gear me-2"></i> Editar Perfil
+                                    </a>
                                 </div>
                             </div>
                         @endguest
@@ -306,9 +309,8 @@
                     </div>
                     <div class="col-md-8">
                         <div class="payment-icons d-flex justify-content-center flex-wrap align-items-center">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/PayPal_Logo_Icon_2014.svg" alt="PayPal">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" style="height: 25px;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" style="height: 20px;">
                             <span class="text-muted small ms-3">© {{ date('Y') }} EcoSkin Cosmetics. Todos los derechos reservados.</span>
                         </div>
                     </div>

@@ -1,190 +1,115 @@
-@extends('layouts.app')
+<x-layout>
+    @section('css')
+    <style>
+        .product-detail-card {
+            border: none;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            background: white;
+            margin-top: -50px;
+        }
+        .nature-header {
+            background: linear-gradient(rgba(45, 90, 39, 0.7), rgba(45, 90, 39, 0.5)), url('https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+        }
+        .main-img {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+        }
+        .ingredients-box {
+            background-color: #f9fbf9;
+            border-left: 5px solid var(--brand-green);
+            padding: 20px;
+            border-radius: 0 15px 15px 0;
+            margin: 20px 0;
+        }
+        .price-tag {
+            font-size: 2.5rem;
+            color: var(--brand-green);
+            font-weight: 800;
+        }
+        .organic-stamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 50px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+    </style>
+    @endsection
 
-@push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<style>
-    .product-show-swiper {
-        width: 100%;
-        height: auto;
-    }
-</style>
-@endpush
-@section('content')
-<div class="container py-5">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-brand-green">Inicio</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $product->name }}</li>
-        </ol>
-    </nav>
+    <div class="nature-header"></div>
 
-    <div class="row g-5">
-        <div class="col-md-6">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-                    @if($product->images->count() > 0)
-                        <div class="swiper product-show-swiper">
-                            <div class="swiper-wrapper">
-                                @foreach($product->images as $image)
-                                    <div class="swiper-slide text-center">
-                                        <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                             class="img-fluid" 
-                                             alt="{{ $product->name }}"
-                                             style="max-height: 500px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
-                                    </div>
-                                @endforeach
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="product-detail-card p-4 p-md-5">
+                    <div class="row">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="main-img">
+                        </div>
+                        <div class="col-md-6">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-success text-decoration-none">Productos</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ $product->category ?? 'Cosmética' }}</li>
+                                </ol>
+                            </nav>
+
+                            <h1 class="display-5 fw-bold text-dark mb-3">{{ $product->name }}</h1>
+                            
+                            @if($product->is_organic)
+                            <div class="organic-stamp">
+                                <i class="bi bi-leaf-fill"></i> 100% Orgánico
                             </div>
-                            <!-- Swiper navigation -->
-                            <div class="swiper-button-next"></div>
-                            <div class="swiper-button-prev"></div>
-                            <div class="swiper-pagination"></div>
+                            @endif
+
+                            <div class="price-tag mb-4">${{ number_format($product->price, 2) }}</div>
+                            
+                            <p class="lead text-muted mb-4">{{ $product->description }}</p>
+
+                            @if($product->ingredients)
+                            <div class="ingredients-box">
+                                <h5 class="fw-bold"><i class="bi bi-droplet-fill me-2"></i>Ingredientes Naturales</h5>
+                                <p class="mb-0 italic">{{ $product->ingredients }}</p>
+                            </div>
+                            @endif
+
+                            <div class="d-flex align-items-center gap-3 mt-4">
+                                <span class="text-muted">Disponibilidad: </span>
+                                <span class="badge {{ $product->stock > 0 ? 'bg-success' : 'bg-danger' }} rounded-pill p-2 px-3">
+                                    {{ $product->stock > 0 ? $product->stock . ' en stock' : 'Agotado' }}
+                                </span>
+                            </div>
+
+                            <div class="mt-5 d-flex gap-3">
+                                <form action="{{ route('cart.add') }}" method="POST" class="flex-grow-1">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                    <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill py-3 shadow">
+                                        <i class="bi bi-cart-plus me-2"></i> Añadir al Carrito
+                                    </button>
+                                </form>
+                                @can('admin')
+                                <a href="{{ route('products.edit', $product) }}" class="btn btn-outline-primary btn-lg rounded-circle px-3">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                @endcan
+                            </div>
                         </div>
-                    @else
-                        <img src="{{ $product->image_url ?? 'https://placehold.co/800x600?text=' . urlencode($product->name) }}" 
-                             alt="{{ $product->name }}" 
-                             class="img-fluid" 
-                             style="max-height: 500px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
-                    @endif
-                </div>
-        </div>
-        <div class="col-md-6">
-            <div class="ps-md-4">
-                <p class="text-uppercase text-muted fw-bold small mb-2">YANA NATURAL</p>
-                <h1 class="fw-bold mb-3">{{ $product->name }}</h1>
-                
-                <div class="d-flex align-items-center mb-4">
-                    <div class="text-warning me-2">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
-                    </div>
-                    <span class="text-muted small">(4.5 valoración de clientes)</span>
-                </div>
-
-                <h2 class="display-6 fw-bold text-dark mb-4">${{ number_format($product->price, 2) }}</h2>
-
-                <div class="mb-5">
-                    <h5 class="fw-bold mb-3">Descripción</h5>
-                    <p class="text-muted leading-relaxed">
-                        {{ $product->description }}
-                    </p>
-                </div>
-
-                <div class="d-grid gap-3 d-md-flex align-items-center">
-                    <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form flex-grow-1">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <div class="input-group mb-3 mb-md-0" style="max-width: 160px;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="decrement()">-</button>
-                            <input type="number" name="quantity" id="quantity" class="form-control text-center" value="1" min="1">
-                            <button class="btn btn-outline-secondary" type="button" onclick="increment()">+</button>
-                        </div>
-                        <button type="submit" class="btn btn-brand-green btn-lg rounded-pill px-5 py-3 text-white fw-bold shadow-sm w-100 mt-3">
-                            <i class="bi bi-cart-plus me-2"></i> Añadir al carrito
-                        </button>
-                    </form>
-                </div>
-
-                <hr class="my-5 opacity-10">
-
-                <div class="d-flex align-items-center gap-4 text-muted">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-truck fs-4 me-2"></i>
-                        <span class="small text-nowrap">Envío gratuito</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-shield-check fs-4 me-2"></i>
-                        <span class="small text-nowrap">Compra segura</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    function increment() {
-        document.getElementById('quantity').stepUp();
-    }
-    function decrement() {
-        document.getElementById('quantity').stepDown();
-    }
-</script>
-@endsection
-
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-    $(document).ready(function() {
-        new Swiper('.product-show-swiper', {
-            slidesPerView: 1,
-            spaceBetween: 30,
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-        });
-
-        // AJAX Add to Cart logic
-        $('.add-to-cart-form').on('submit', function(e) {
-            e.preventDefault();
-            const form = $(this);
-            const url = form.attr('action');
-            const data = form.serialize();
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: data,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        // Update badge
-                        let badge = $('#cart-badge');
-                        if (badge.length === 0) {
-                            $('.bi-cart3').parent().append('<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-badge">' + response.cart_count + '</span>');
-                        } else {
-                            badge.text(response.cart_count);
-                        }
-                        
-                        // Visual feedback
-                        const btn = form.find('button[type="submit"]');
-                        const originalHtml = btn.html();
-                        
-                        btn.html('<i class="bi bi-check-lg"></i> Añadido')
-                           .addClass('btn-success').removeClass('btn-brand-green');
-
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Añadido al carrito!',
-                                text: 'El producto se ha añadido correctamente.',
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-                        }
-
-                        setTimeout(() => {
-                            btn.html(originalHtml)
-                               .addClass('btn-brand-green').removeClass('btn-success');
-                        }, 2000);
-                    }
-                },
-                error: function(xhr) {
-                    if(xhr.status === 401) {
-                        window.location.href = '/login';
-                    } else {
-                        alert('Ocurrió un error al añadir el producto.');
-                    }
-                }
-            });
-        });
-    });
-</script>
-@endpush
+</x-layout>
