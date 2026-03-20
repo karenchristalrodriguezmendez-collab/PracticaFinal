@@ -2,28 +2,24 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Product::class;
 
-    /**
-     * Define the model's default state.
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'description' => fake()->text(),
-            'price' => fake()->randomFloat(2, 0, 9999999.99),
+            'name' => $this->faker->words(3, true),
+            'description' => $this->faker->paragraph(),
+            'price' => $this->faker->randomFloat(2, 5, 100),
+            'stock' => $this->faker->numberBetween(0, 100),
+            'category' => $this->faker->randomElement(['Aceites Esenciales', 'Cuidado Facial', 'Corporal', 'Capilar', 'Tónicos']),
+            'ingredients' => $this->faker->words(5, true),
+            'is_organic' => $this->faker->boolean(40),
+            'image' => null,
         ];
     }
 }

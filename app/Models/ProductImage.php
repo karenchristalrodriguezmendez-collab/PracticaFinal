@@ -24,7 +24,6 @@ class ProductImage extends Model
 
     public function exists(): bool
     {
-        return !empty($this->image_path) &&
-            Storage::disk('public')->exists($this->image_path);
+        return !empty($this->image_path) && Storage::disk('public')->exists($this->image_path);
     }
 }

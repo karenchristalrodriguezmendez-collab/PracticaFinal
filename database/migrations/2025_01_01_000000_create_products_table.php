@@ -13,9 +13,14 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price', 9, 2);
+            $table->decimal('price', 10, 2);
+            $table->integer('stock')->default(0);
+            $table->string('category')->nullable();
+            $table->text('ingredients')->nullable();
+            $table->boolean('is_organic')->default(false);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

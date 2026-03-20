@@ -151,6 +151,8 @@
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
 </div>
 <x-ticket :order="$order" />
 

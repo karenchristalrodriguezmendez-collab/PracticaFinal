@@ -64,7 +64,8 @@ Route::get("password/confirm", [
 ])->name("password.confirm");
 Route::post("password/confirm", [ConfirmPasswordController::class, "confirm"]);
 // Rutas públicas de productos
-Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('products', [ProductController::class, 'index'])->name('products.index');
+Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show')->where('product', '[0-9]+');
 
 Route::middleware(["auth", "security:auth"])->group(function () {
     Route::get("/home", [HomeController::class, "index"])->name("home");
@@ -79,12 +80,9 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     Route::get('/cart/success', [App\Http\Controllers\CartController::class, 'success'])->name('cart.success');
 
     // Rutas de productos
-    // Rutas de productos protegidas para admin (excepto get products y create/store si aplican)
-    Route::get("products/data", [ProductController::class, "dataTable"])->name(
-        "products.data",
-    );
-    // Rutas de productos
-    Route::resource("products", ProductController::class);
+    // Rutas de productos protegidas
+    Route::resource("products", ProductController::class)->except(['index', 'show'])->parameters(['products' => 'product']);
+    Route::get("products/data", [ProductController::class, "dataTable"])->name("products.data");
     
     // Redirección para compatibilidad con rutas antiguas
     Route::get("productos", function() { return redirect()->route('products.index'); });
@@ -93,7 +91,7 @@ Route::middleware(["auth", "security:auth"])->group(function () {
     Route::get("products/{product}/download-image", [
         ProductController::class,
         "downloadImage",
-    ])->name("products.download-image");
+    ])->name("products.download-image")->where('product', '[0-9]+');
 
     // Rutas de empresas
     Route::resource('companies', CompanyController::class)->except(['show', 'update']);

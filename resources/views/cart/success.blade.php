@@ -157,18 +157,36 @@
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                alert('Ticket enviado correctamente a la impresora.');
+                btn.innerHTML = '✅ Ticket Impreso';
+                btn.style.backgroundColor = '#28a745';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    btn.style.backgroundColor = '#BA9B72';
+                }, 3000);
             } else {
-                alert('Error al imprimir: ' + data.message);
+                btn.innerHTML = '❌ Impresora no encontrada';
+                btn.style.backgroundColor = '#dc3545';
+                alert('⚠️ No se pudo imprimir:\n\n' + data.message);
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                    btn.style.backgroundColor = '#BA9B72';
+                }, 5000);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión con la impresora.');
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
+            btn.innerHTML = '❌ Error de Conexión';
+            btn.style.backgroundColor = '#dc3545';
+            alert('❌ Error crítico: No se pudo comunicar con el servicio de impresión.');
+            
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                btn.style.backgroundColor = '#BA9B72';
+            }, 5000);
         });
     }
 </script>

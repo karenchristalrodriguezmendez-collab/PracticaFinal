@@ -1,0 +1,25 @@
+
+   FAIL  Tests\Feature\DataTablesTest
+  ⨯ datatables…  0.54s  
+  ────────────────────  
+   F…  QueryException   
+  SQLSTATE[HY000]: General error: 1 no such table: users (Connection: sqlite, SQL: select * from "users" limit 1)
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:406
+    402▕             // For select statements, we'll simply execute the query and return an array
+    403▕             // of the database result set. Each element in the array will be a single
+    404▕             // row from the database table, and will either be an array or objects.
+    405▕             $statement = $this->prepared(
+  ➜ 406▕                 $this->getPdoForSelect($useReadPdo)->prepare($query)
+    407▕             );
+    408▕ 
+    409▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    410▕
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:406
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:811
+
+
+  Tests:    1 failed (0 assertions)
+  Duration: 1.13s
+
