@@ -23,101 +23,98 @@
     @stack('styles')
     <style>
         :root {
-            --brand-green: #58624A;
-            --brand-tan: #BA9B72;
-            --light-bg: #f8faf8;
+            --brand-green: #1C2833; /* Elegant Deep Slate */
+            --brand-tan: #D4AF37; /* Elegant Gold */
+            --light-bg: #F8F9FA;
         }
-        body { background-color: #fff; }
+        body { background-color: #FCFCFC; color: #2C3E50; font-family: 'Nunito', sans-serif; }
         .top-bar { letter-spacing: 0.5px; }
-        .search-group { background: #f1f3f1; border-color: #e1e4e1 !important; transition: all 0.3s ease; }
-        .search-group:focus-within { background: #fff; box-shadow: 0 0 0 3px rgba(88, 98, 74, 0.1); border-color: #58624A !important; }
+        .search-group { background: #F1F3F5; border-color: #E9ECEF !important; transition: all 0.3s ease; }
+        .search-group:focus-within { background: #fff; box-shadow: 0 0 0 3px rgba(28, 40, 51, 0.1); border-color: #1C2833 !important; }
         .focus-none:focus { box-shadow: none; background: transparent; }
-        .hover-green:hover { color: #58624A !important; background-color: #f8faf8; }
-        .nav-link { transition: all 0.2s ease; }
-        header.sticky-top { top: 0; z-index: 1020; }
+        .hover-green:hover { color: #D4AF37 !important; background-color: transparent; }
+        .nav-link { transition: all 0.3s ease; font-weight: 500; letter-spacing: 0.5px; }
+        header.sticky-top { top: 0; z-index: 1020; border-bottom: 1px solid rgba(0,0,0,0.05) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important; }
         .navbar-brand div { transition: transform 0.3s ease; }
-        .badge { font-weight: 600; }
-        .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .shadow-hover { transition: all 0.3s ease; }
-        .shadow-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
-        .btn-brand-green { background-color: #58624A; color: white; border: none; transition: all 0.3s ease; }
-        .btn-brand-green:hover { background-color: #4a533e; color: white; transform: scale(1.05); }
-        .btn-outline-brand-green { border: 2px solid #58624A; color: #58624A; background: transparent; transition: all 0.3s ease; }
-        .btn-outline-brand-green:hover { background-color: #58624A; color: white; }
-        .x-small { font-size: 0.65rem; letter-spacing: 1px; }
-        .cat-item { cursor: pointer; transition: all 0.3s ease; }
-        .cat-item:hover { transform: scale(1.1); background-color: #58624A !important; }
+        .badge { font-weight: 600; letter-spacing: 0.5px; }
+        .text-shadow { text-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        .shadow-hover { transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .shadow-hover:hover { transform: translateY(-6px); box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important; }
+        .btn-brand-green { background-color: #1C2833; color: white; border: none; transition: all 0.3s ease; font-weight: 600; }
+        .btn-brand-green:hover { background-color: #151E27; color: white; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(28, 40, 51, 0.2); }
+        .btn-outline-brand-green { border: 2px solid #1C2833; color: #1C2833; background: transparent; transition: all 0.3s ease; font-weight: 600; }
+        .btn-outline-brand-green:hover { background-color: #1C2833; color: white; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(28, 40, 51, 0.2); }
+        .text-brand-green { color: #1C2833 !important; }
+        .bg-brand-green { background-color: #1C2833 !important; }
+        .x-small { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; }
+        .cat-item { cursor: pointer; transition: all 0.4s ease; border: 1px solid #E9ECEF; }
+        .cat-item:hover { transform: scale(1.05); background-color: #1C2833 !important; border-color: #1C2833; box-shadow: 0 10px 20px rgba(28, 40, 51, 0.15); }
         .cat-item:hover i { color: #fff !important; }
-        .newsletter-section { background-color: #fff; padding: 60px 0; border-top: 1px solid #eee; }
-        .footer-main { background-color: #58624A; color: #fff; padding: 60px 0; }
-        .footer-main a { color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s ease; }
-        .footer-main a:hover { color: #fff; padding-left: 5px; }
-        .footer-bottom { background-color: #fff; padding: 30px 0; border-top: 1px solid #eee; }
-        .app-badge { height: 40px; transition: transform 0.3s ease; }
-        .app-badge:hover { transform: scale(1.05); }
-        .social-icons a { font-size: 1.5rem; color: #fff; opacity: 0.8; transition: opacity 0.3s ease; }
-        .social-icons a:hover { opacity: 1; }
-        .payment-icons img { height: 25px; filter: grayscale(100%); opacity: 0.6; transition: all 0.3s ease; margin: 0 10px; }
-        .payment-icons img:hover { filter: grayscale(0%); opacity: 1; }
+        .newsletter-section { background-color: #FCFCFC; padding: 80px 0; border-top: 1px solid #E9ECEF; }
+        .footer-main { background-color: #1C2833; color: #E9ECEF; padding: 70px 0; }
+        .footer-main h5 { color: #D4AF37; font-family: 'Outfit', sans-serif; letter-spacing: 1px; text-transform: uppercase; font-size: 1rem; }
+        .footer-main a { color: #ADB5BD; text-decoration: none; transition: all 0.3s ease; }
+        .footer-main a:hover { color: #fff; padding-left: 8px; }
+        .footer-bottom { background-color: #151E27; padding: 25px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+        .app-badge { height: 40px; transition: transform 0.3s ease; border-radius: 8px; }
+        .app-badge:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .social-icons a { font-size: 1.2rem; color: #ADB5BD; transition: all 0.3s ease; background: rgba(255,255,255,0.05); width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .social-icons a:hover { color: #fff; background: #D4AF37; transform: translateY(-3px); }
+        .payment-icons img { height: 25px; filter: grayscale(100%) opacity(0.7); transition: all 0.3s ease; margin: 0 12px; }
+        .payment-icons img:hover { filter: grayscale(0%) opacity(1); }
 
         /* Global Bootstrap Primary Overrides */
         :root {
-            --bs-primary: #58624A;
-            --bs-primary-rgb: 88, 98, 74;
-            --bs-link-color: #58624A;
-            --bs-link-hover-color: #3d4433;
+            --bs-primary: #1C2833;
+            --bs-primary-rgb: 28, 40, 51;
+            --bs-link-color: #1C2833;
+            --bs-link-hover-color: #D4AF37;
         }
 
         .btn-primary {
-            --bs-btn-bg: #58624A;
-            --bs-btn-border-color: #58624A;
-            --bs-btn-hover-bg: #3d4433;
-            --bs-btn-hover-border-color: #3d4433;
-            --bs-btn-active-bg: #3d4433;
-            --bs-btn-active-border-color: #3d4433;
+            --bs-btn-bg: #1C2833;
+            --bs-btn-border-color: #1C2833;
+            --bs-btn-hover-bg: #151E27;
+            --bs-btn-hover-border-color: #151E27;
+            --bs-btn-active-bg: #151E27;
+            --bs-btn-active-border-color: #151E27;
         }
 
         .btn-outline-primary {
-            --bs-btn-color: #58624A;
-            --bs-btn-border-color: #58624A;
-            --bs-btn-hover-bg: #58624A;
-            --bs-btn-hover-border-color: #58624A;
-            --bs-btn-active-bg: #58624A;
-            --bs-btn-active-border-color: #58624A;
+            --bs-btn-color: #1C2833;
+            --bs-btn-border-color: #1C2833;
+            --bs-btn-hover-bg: #1C2833;
+            --bs-btn-hover-border-color: #1C2833;
+            --bs-btn-active-bg: #1C2833;
+            --bs-btn-active-border-color: #1C2833;
         }
 
-        .text-primary { color: #58624A !important; }
-        .bg-primary { background-color: #58624A !important; }
+        .text-primary { color: #1C2833 !important; }
+        .bg-primary { background-color: #1C2833 !important; }
         
         /* Pagination overrides */
         .page-item.active .page-link {
-            background-color: #58624A;
-            border-color: #58624A;
+            background-color: #1C2833;
+            border-color: #1C2833;
         }
         .page-link {
-            color: #58624A;
+            color: #1C2833;
         }
         .page-link:hover {
-            color: #3d4433;
+            color: #D4AF37;
+            background-color: #F8F9FA;
         }
 
         /* Form focus overrides */
         .form-control:focus {
-            border-color: #58624A;
-            box-shadow: 0 0 0 0.25rem rgba(88, 98, 74, 0.25);
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
         }
 
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- Top Bar -->
-        <div class="top-bar text-white py-1 text-center" style="background-color: #58624A; font-size: 0.85rem;">
-            <div class="container d-flex justify-content-between">
-                <div><i class="bi bi-clock me-1"></i> Envío gratis en tu primer pedido</div>
-                <div class="d-none d-md-block">¿Necesitas ayuda? <i class="bi bi-whatsapp ms-1"></i></div>
-            </div>
-        </div>
 
         <!-- Main Header -->
         <header class="bg-white shadow-sm py-3 border-bottom sticky-top">
@@ -166,20 +163,27 @@
                                     <span class="small d-none d-lg-block">{{ Auth::user()->name }}</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end shadow border-0 mt-3" aria-labelledby="userDropdown">
+                                    <a class="dropdown-item py-2" href="{{ url('/') }}">
+                                        <i class="bi bi-house me-2"></i> Inicio
+                                    </a>
+                                    <a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
+                                        <i class="bi bi-person-gear me-2"></i> Editar Perfil
+                                    </a>
+                                    <a class="dropdown-item py-2" href="{{ route('orders.index') }}">
+                                        <i class="bi bi-box-seam me-2"></i> Mis Pedidos
+                                    </a>
                                     @role('admin')
-                                        <a class="dropdown-item py-2" href="{{ route('admin.orders.index') }}">
-                                            <i class="bi bi-box-seam me-2"></i> Administrar Pedidos
-                                        </a>
                                         <hr class="dropdown-divider">
+                                        <a class="dropdown-item py-2" href="{{ route('admin.orders.index') }}">
+                                            <i class="bi bi-speedometer2 me-2"></i> Panel de Admin
+                                        </a>
                                     @endrole
+                                    <hr class="dropdown-divider">
                                     <a class="dropdown-item py-2 text-danger" href="{{ route('logout') }}"
                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
-                                    <a class="dropdown-item py-2" href="#">
-                                        <i class="bi bi-person-gear me-2"></i> Editar Perfil
-                                    </a>
                                 </div>
                             </div>
                         @endguest
@@ -208,28 +212,6 @@
             </div>
         </header>
 
-        <!-- Categories Nav -->
-        <nav class="bg-white border-bottom d-none d-md-block">
-            <div class="container">
-                <ul class="nav nav-fill py-1 justify-content-center">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-medium small hover-green" href="{{ url('/') }}">Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-medium small hover-green" href="{{ route('companies.index') }}">Nuestras Marcas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-medium small hover-green" href="#">Cosmética</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-medium small hover-green" href="#">Higiene</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark fw-medium small hover-green" href="#">Promociones</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
 
         <main class="py-4">
             @yield('content')
@@ -265,9 +247,9 @@
                     <div class="col-6 col-md-3">
                         <h5 class="fw-bold mb-4">Sobre Nosotros</h5>
                         <ul class="list-unstyled">
-                            <li class="mb-2"><a href="#">Quiénes somos</a></li>
-                            <li class="mb-2"><a href="#">Compromiso sostenible</a></li>
-                            <li class="mb-2"><a href="#">Programa de fidelidad</a></li>
+                            <li class="mb-2"><a href="{{ route('about') }}">Quiénes somos</a></li>
+                            <li class="mb-2"><a href="{{ route('about') }}#valores">Compromiso sostenible</a></li>
+                            <li class="mb-2"><a href="{{ route('about') }}#fundadora">Nuestra fundadora</a></li>
                         </ul>
                     </div>
                     <div class="col-6 col-md-2">

@@ -17,6 +17,13 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderAdminController;
 
 
+Route::get('/sobre-nosotros', function () {
+    return view('about');
+})->name('about');
+
+Route::get('/perfil/editar', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+Route::put('/perfil/editar', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
 Route::get("/", function (Request $request) {
     $search = $request->input("search");
     $query = \App\Models\Product::query();
